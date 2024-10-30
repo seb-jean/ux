@@ -41,8 +41,6 @@ Enjoy your new component!
 .. image:: images/alert-example.png
    :alt: Example of the Alert Component
 
-   Example of the Alert Component
-
 This brings the familiar "component" system from client-side frameworks
 into Symfony. Combine this with `Live Components`_, to create
 an interactive frontend with automatic, Ajax-powered rendering.
@@ -985,7 +983,7 @@ Render
 
 .. versionadded:: 2.15
 
-    The ability to *render* attributes was added in TwigComponents 2.15.
+    The ability to *render* attributes was added in Turbo 2.22.
 
 You can take full control over the attributes that are rendered by using the
 ``render()`` method.
