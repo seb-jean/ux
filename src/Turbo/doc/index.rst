@@ -288,6 +288,37 @@ With content:
         A placeholder.
     </turbo-frame>
 
+Minimal layout for Turbo Frames
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. versionadded:: 2.22
+
+    The minimal layout for Turbo Frames was added in Turbo 2.22.
+
+Since Turbo does not need the content outside of the frame, reducing the amount that is rendered can be a useful optimisation.
+
+.. code-block:: html+twig
+
+    {% extends '@Turbo/frame.html.twig' %}
+
+    {% block body %}
+        <turbo-frame id="frame_id">
+            Content of the Turbo Frame
+        </turbo-frame>
+    {% endblock %}
+    
+    {# renders as: #}
+    <!DOCTYPE html>
+    <html>
+        <head>
+        </head>
+        <body>
+            <turbo-frame id="frame_id">
+                Content of the Turbo Frame
+            </turbo-frame>
+        </body>
+    </html>
+
 Writing Tests
 ^^^^^^^^^^^^^
 
