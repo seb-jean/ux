@@ -2,6 +2,7 @@
 
 ## 2.22.0
 
+-   Include minimal layout for Turbo Frames
 -   Add `<twig:Turbo:Stream>` component
 -   Add `<twig:Turbo:Frame>` component
 
