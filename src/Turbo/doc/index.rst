@@ -315,7 +315,7 @@ Since Turbo does not need the content outside of the frame, reducing the amount 
     <!DOCTYPE html>
     <html>
         <head>
-            <meta name="test" content="present" />
+            <meta name="alternative" content="present" />
         </head>
         <body>
             <turbo-frame id="frame_id">
