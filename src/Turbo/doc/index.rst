@@ -295,8 +295,7 @@ Minimal layout for Turbo Frames
 
     The minimal layout for Turbo Frames was added in Turbo 2.22.
 
-Since Turbo does not need the content outside of the frame, reducing the amount that is rendered can be a useful optimisation. However, this optimisation prevents responses from specifying ``head`` content as well. There are cases where it would be useful for Turbo to have access to items specified in ``head``. To specify the heads, you must then use a minimal layout for frame, rather than no layout. With this, applications can render content into the ``head`` if they want.
-
+Since Turbo does not need the content outside of the frame, reducing the amount that is rendered can be a useful optimisation. There are cases where it would be useful for Turbo to have access to items specified in ``head``. To specify the heads, you must then use a minimal layout for frame, rather than no layout. it allows you to set ``meta`` tags while still having a minimal layout.
 .. code-block:: html+twig
 
     {% extends '@Turbo/frame.html.twig' %}
