@@ -297,32 +297,35 @@ Minimal layout for Turbo Frames
 
 Since Turbo does not need the content outside of the frame, reducing the amount that is rendered can be a useful optimisation. There are cases where it would be useful for Turbo to have access to items specified in ``head``. To specify the heads, you must then use a minimal layout for frame, rather than no layout. it allows you to set ``meta`` tags while still having a minimal layout.
 
+    // src/Controller/TaskController.php
+    namespace App\Controller;
+
+    // ...
+
+    class TaskController extends AbstractController
+    {
+        public function markAllAsDone(): Response
+        {
+            return $this->renderBlock('task/index.html.twig', 'mark_all_as_done');
+        }
+    }
+
 .. code-block:: html+twig
 
-    {% extends '@Turbo/frame.html.twig' %}
-
-    {% block head %}
-        <meta name="alternative" content="present" />
+    {# bottom of task/index.html.twig #}
+    {% block mark_all_as_done %}
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta name="alternative" content="present" />
+            </head>
+            <body>
+                <turbo-frame id="mark-all-as-done">
+                    A placeholder.
+                </turbo-frame>
+            </body>
+        </html>
     {% endblock %}
-
-    {% block body %}
-        <turbo-frame id="frame_id">
-            Content of the Turbo Frame
-        </turbo-frame>
-    {% endblock %}
-    
-    {# renders as: #}
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <meta name="alternative" content="present" />
-        </head>
-        <body>
-            <turbo-frame id="frame_id">
-                Content of the Turbo Frame
-            </turbo-frame>
-        </body>
-    </html>
 
 Writing Tests
 ^^^^^^^^^^^^^
