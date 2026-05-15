@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.1.0
+
+- Deprecate Twig functions `stimulus_controller()`, `stimulus_action()`, `stimulus_target()`, use `ux_stimulus_controller()`, `ux_stimulus_action()`, `ux_stimulus_target()` instead
+- Deprecate Twig filters `stimulus_controller`, `stimulus_action`, `stimulus_target`, use `ux_stimulus_controller`, `ux_stimulus_action`, `ux_stimulus_target` instead
+
 ## 3.0.0
 
 - Minimum required Symfony version is now 7.4

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.2
+
+- Deprecate Twig function `component_url()`, use `ux_live_component_url()` instead
+- Deprecate Twig function `live_action()`, use `ux_live_action()` instead
+
 ## 3.1
 
 - Use `aria-busy` attribute during component re-render

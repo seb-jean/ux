@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.2.0
+
+- Deprecate Twig functions `turbo_is_frame_request()`, `turbo_frame_request_id()`, `turbo_stream_from()`, `turbo_exempts_page_from_cache()`, `turbo_exempts_page_from_preview()`, `turbo_page_requires_reload()`, `turbo_refreshes_with()`, `turbo_refresh_method()`, `turbo_refresh_scroll()`, use `ux_turbo_*` equivalents instead
+
 ## 3.1.0
 
 - Add a minimal layout for Turbo Frame responses, allowing `head` content like meta tags to work properly

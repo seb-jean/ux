@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.2.0
+
+- Deprecate Twig function `component()`, use `ux_component()` instead
+- Deprecate Twig function `provide()`, use `ux_provide()` instead
+- Deprecate Twig function `inject()`, use `ux_inject()` instead
+
 ## 3.1.0
 
 - Add `provide()` and `inject()` Twig functions to share state from a parent
