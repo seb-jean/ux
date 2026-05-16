@@ -15,33 +15,22 @@ use PHPUnit\Framework\TestCase;
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Local\LocalProvider;
 use Symfony\UX\Image\Transformation;
-use Symfony\UX\StimulusBundle\Helper\StimulusHelper;
 
 class LocalProviderTest extends TestCase
 {
-    private StimulusHelper $stimulus;
-
-    protected function setUp(): void
-    {
-        $this->stimulus = new StimulusHelper(null);
-    }
-
     public function testRenderImageWithoutTransformation(): void
     {
-        $provider = new LocalProvider($this->stimulus);
+        $provider = new LocalProvider();
         $image = new Image('/images/photo.jpg', 'A photo');
 
         $html = $provider->renderImage($image);
 
-        $this->assertStringContainsString('<img', $html);
-        $this->assertStringContainsString('data-controller="symfony--ux-image--local"', $html);
-        $this->assertStringContainsString('data-symfony--ux-image--local-src-value="/images/photo.jpg"', $html);
-        $this->assertStringContainsString('data-symfony--ux-image--local-alt-value="A photo"', $html);
+        $this->assertSame('<img src="/images/photo.jpg" alt="A photo" loading="lazy" />', $html);
     }
 
     public function testRenderImageWithTransformation(): void
     {
-        $provider = new LocalProvider($this->stimulus);
+        $provider = new LocalProvider();
         $image = (new Image('/images/photo.jpg'))
             ->transform(
                 Transformation::create()
@@ -54,29 +43,44 @@ class LocalProviderTest extends TestCase
 
         $html = $provider->renderImage($image);
 
-        $this->assertStringContainsString('data-symfony--ux-image--local-transformation-value=', $html);
-        $decoded = html_entity_decode($html);
-        $this->assertStringContainsString('"width":800', $decoded);
-        $this->assertStringContainsString('"height":600', $decoded);
-        $this->assertStringContainsString('"format":"webp"', $decoded);
-        $this->assertStringContainsString('"quality":85', $decoded);
-        $this->assertStringContainsString('"fit":"cover"', $decoded);
+        $this->assertStringStartsWith('<img src="/_image?', $html);
+        $this->assertStringContainsString('src=%2Fimages%2Fphoto.jpg', $html);
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('h=600', $html);
+        $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringContainsString('q=85', $html);
+        $this->assertStringContainsString('fit=cover', $html);
+    }
+
+    public function testRenderImageWithWidthAndHeight(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->alt('Photo')
+            ->width(800)
+            ->height(600);
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+        $this->assertStringContainsString('alt="Photo"', $html);
     }
 
     public function testRenderImageWithCustomEndpoint(): void
     {
-        $provider = new LocalProvider($this->stimulus, '/resize');
-        $image = new Image('/images/photo.jpg');
+        $provider = new LocalProvider('/resize');
+        $image = (new Image('/images/photo.jpg'))
+            ->transform(Transformation::create()->width(400));
 
         $html = $provider->renderImage($image);
 
-        $decoded = html_entity_decode($html);
-        $this->assertMatchesRegularExpression('/"endpoint":"\\\\?\/resize"/', $decoded);
+        $this->assertStringStartsWith('<img src="/resize?', $html);
     }
 
     public function testRenderImageWithExtraAttributes(): void
     {
-        $provider = new LocalProvider($this->stimulus);
+        $provider = new LocalProvider();
         $image = new Image('/images/photo.jpg');
 
         $html = $provider->renderImage($image, ['class' => 'hero-image', 'data-id' => '42']);
@@ -85,9 +89,30 @@ class LocalProviderTest extends TestCase
         $this->assertStringContainsString('data-id="42"', $html);
     }
 
+    public function testExtraAttributesCanOverrideDefaults(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))->loading('lazy');
+
+        $html = $provider->renderImage($image, ['loading' => 'eager']);
+
+        $this->assertStringContainsString('loading="eager"', $html);
+    }
+
+    public function testAttributesAreHtmlEscaped(): void
+    {
+        $provider = new LocalProvider();
+        $image = new Image('/images/photo.jpg', '<script>alert(1)</script>');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('alt="&lt;script&gt;alert(1)&lt;/script&gt;"', $html);
+        $this->assertStringNotContainsString('<script>', $html);
+    }
+
     public function testToString(): void
     {
-        $provider = new LocalProvider($this->stimulus);
+        $provider = new LocalProvider();
         $this->assertSame('local', (string) $provider);
     }
 }

@@ -11,18 +11,11 @@
 
 namespace Symfony\UX\Image\Provider;
 
-use Symfony\UX\StimulusBundle\Helper\StimulusHelper;
-
 /**
  * @author Sébastien Jean <contact@seb-jean.fr>
  */
 abstract class AbstractProviderFactory implements ProviderFactoryInterface
 {
-    public function __construct(
-        protected readonly StimulusHelper $stimulus,
-    ) {
-    }
-
     public function supports(Dsn $dsn): bool
     {
         return \in_array($dsn->getScheme(), $this->getSupportedSchemes(), true);

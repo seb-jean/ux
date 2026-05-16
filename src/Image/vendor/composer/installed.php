@@ -3,24 +3,13 @@
         'name' => 'symfony/ux-image',
         'pretty_version' => '3.x-dev',
         'version' => '3.9999999.9999999.9999999-dev',
-        'reference' => '7d8bd8632b80316421e122a829bbe60242780793',
+        'reference' => 'c2c45f2a1555024c2695b6a7a01b565d3bf578aa',
         'type' => 'symfony-bundle',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        'composer/semver' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '09af5e85b5f1380e4e098dde28950e2549cba4ed',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/./semver',
-            'aliases' => array(
-                0 => '3.x-dev',
-            ),
-            'dev_requirement' => true,
-        ),
         'myclabs/deep-copy' => array(
             'pretty_version' => '1.x-dev',
             'version' => '1.9999999.9999999.9999999-dev',
@@ -60,18 +49,6 @@
             'install_path' => __DIR__ . '/../phar-io/version',
             'aliases' => array(),
             'dev_requirement' => true,
-        ),
-        'php-http/async-client-implementation' => array(
-            'dev_requirement' => true,
-            'provided' => array(
-                0 => '*',
-            ),
-        ),
-        'php-http/client-implementation' => array(
-            'dev_requirement' => true,
-            'provided' => array(
-                0 => '*',
-            ),
         ),
         'phpunit/php-code-coverage' => array(
             'pretty_version' => '12.5.x-dev',
@@ -174,12 +151,6 @@
         ),
         'psr/event-dispatcher-implementation' => array(
             'dev_requirement' => false,
-            'provided' => array(
-                0 => '1.0',
-            ),
-        ),
-        'psr/http-client-implementation' => array(
-            'dev_requirement' => true,
             'provided' => array(
                 0 => '1.0',
             ),
@@ -333,15 +304,6 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
-        'symfony/asset-mapper' => array(
-            'pretty_version' => '8.1.x-dev',
-            'version' => '8.1.9999999.9999999-dev',
-            'reference' => 'bf5c18b7196ae1b2fa778a0d419ec3b9a911db68',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/asset-mapper',
-            'aliases' => array(),
-            'dev_requirement' => true,
-        ),
         'symfony/cache' => array(
             'pretty_version' => '8.1.x-dev',
             'version' => '8.1.9999999.9999999-dev',
@@ -448,7 +410,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/finder',
             'aliases' => array(),
-            'dev_requirement' => false,
+            'dev_requirement' => true,
         ),
         'symfony/framework-bundle' => array(
             'pretty_version' => '8.1.x-dev',
@@ -458,32 +420,6 @@
             'install_path' => __DIR__ . '/../symfony/framework-bundle',
             'aliases' => array(),
             'dev_requirement' => true,
-        ),
-        'symfony/http-client' => array(
-            'pretty_version' => '8.1.x-dev',
-            'version' => '8.1.9999999.9999999-dev',
-            'reference' => 'b234d84846ebaedc1f7681cc8d0a61b09d5ee175',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/http-client',
-            'aliases' => array(),
-            'dev_requirement' => true,
-        ),
-        'symfony/http-client-contracts' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/http-client-contracts',
-            'aliases' => array(
-                0 => '3.7.x-dev',
-            ),
-            'dev_requirement' => true,
-        ),
-        'symfony/http-client-implementation' => array(
-            'dev_requirement' => true,
-            'provided' => array(
-                0 => '3.0',
-            ),
         ),
         'symfony/http-foundation' => array(
             'pretty_version' => '8.1.x-dev',
@@ -565,15 +501,6 @@
                 0 => '1.1|2.0|3.0',
             ),
         ),
-        'symfony/stimulus-bundle' => array(
-            'pretty_version' => '3.x-dev',
-            'version' => '3.9999999.9999999.9999999-dev',
-            'reference' => 'b2ffd031ece2901e8f41341a6b9ed4260308a46e',
-            'type' => 'symfony-bundle',
-            'install_path' => __DIR__ . '/../symfony/stimulus-bundle',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'symfony/translation-contracts' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
@@ -606,7 +533,7 @@
         'symfony/ux-image' => array(
             'pretty_version' => '3.x-dev',
             'version' => '3.9999999.9999999.9999999-dev',
-            'reference' => '7d8bd8632b80316421e122a829bbe60242780793',
+            'reference' => 'c2c45f2a1555024c2695b6a7a01b565d3bf578aa',
             'type' => 'symfony-bundle',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

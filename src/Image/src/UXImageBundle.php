@@ -11,7 +11,6 @@
 
 namespace Symfony\UX\Image;
 
-use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -43,25 +42,5 @@ final class UXImageBundle extends AbstractBundle
         $container->services()
             ->get('ux_image.providers')
             ->arg(0, ['default' => $config['provider']]);
-    }
-
-    public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
-    {
-        if (!$this->isAssetMapperAvailable()) {
-            return;
-        }
-
-        $builder->prependExtensionConfig('framework', [
-            'asset_mapper' => [
-                'paths' => [
-                    __DIR__.'/../assets/dist' => '@symfony/ux-image',
-                ],
-            ],
-        ]);
-    }
-
-    private function isAssetMapperAvailable(): bool
-    {
-        return interface_exists(AssetMapperInterface::class);
     }
 }

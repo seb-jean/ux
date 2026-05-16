@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Symfony\UX\Image\Provider\AbstractProviderFactory;
 use Symfony\UX\Image\Provider\Local\LocalProviderFactory;
 use Symfony\UX\Image\Provider\Provider;
 use Symfony\UX\Image\Provider\Providers;
@@ -26,14 +25,7 @@ return static function (ContainerConfigurator $container): void {
                 abstract_arg('providers configuration'),
             ])
 
-        ->set('ux_image.provider_factory.abstract', AbstractProviderFactory::class)
-            ->abstract()
-            ->args([
-                service('stimulus.helper'),
-            ])
-
         ->set('ux_image.provider_factory.local', LocalProviderFactory::class)
-            ->parent('ux_image.provider_factory.abstract')
             ->tag('ux_image.provider_factory')
 
         ->set('ux_image.provider', Provider::class)

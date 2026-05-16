@@ -28,7 +28,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         ),
         'S' => 
         array (
-            'Symfony\\UX\\StimulusBundle\\' => 26,
             'Symfony\\UX\\Image\\Tests\\' => 23,
             'Symfony\\UX\\Image\\' => 17,
             'Symfony\\Polyfill\\Php85\\' => 23,
@@ -37,7 +36,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\Translation\\' => 30,
             'Symfony\\Contracts\\Service\\' => 26,
-            'Symfony\\Contracts\\HttpClient\\' => 29,
             'Symfony\\Contracts\\EventDispatcher\\' => 34,
             'Symfony\\Contracts\\Cache\\' => 24,
             'Symfony\\Component\\VarExporter\\' => 30,
@@ -45,7 +43,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
             'Symfony\\Component\\Routing\\' => 26,
             'Symfony\\Component\\HttpKernel\\' => 29,
             'Symfony\\Component\\HttpFoundation\\' => 33,
-            'Symfony\\Component\\HttpClient\\' => 29,
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\Filesystem\\' => 29,
             'Symfony\\Component\\EventDispatcher\\' => 34,
@@ -53,7 +50,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
             'Symfony\\Component\\DependencyInjection\\' => 38,
             'Symfony\\Component\\Config\\' => 25,
             'Symfony\\Component\\Cache\\' => 24,
-            'Symfony\\Component\\AssetMapper\\' => 30,
             'Symfony\\Bundle\\TwigBundle\\' => 26,
             'Symfony\\Bundle\\FrameworkBundle\\' => 31,
             'Symfony\\Bridge\\Twig\\' => 20,
@@ -70,20 +66,12 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         array (
             'DeepCopy\\' => 9,
         ),
-        'C' => 
-        array (
-            'Composer\\Semver\\' => 16,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Twig\\' => 
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
-        ),
-        'Symfony\\UX\\StimulusBundle\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/stimulus-bundle/src',
         ),
         'Symfony\\UX\\Image\\Tests\\' => 
         array (
@@ -117,10 +105,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\HttpClient\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/http-client-contracts',
-        ),
         'Symfony\\Contracts\\EventDispatcher\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
@@ -149,10 +133,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\HttpClient\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/http-client',
-        ),
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
@@ -180,10 +160,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         'Symfony\\Component\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/cache',
-        ),
-        'Symfony\\Component\\AssetMapper\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/asset-mapper',
         ),
         'Symfony\\Bundle\\TwigBundle\\' => 
         array (
@@ -220,10 +196,6 @@ class ComposerStaticInit05a27593a25a69c16cd82fe7880a7be8
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
-        ),
-        'Composer\\Semver\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
     );
 

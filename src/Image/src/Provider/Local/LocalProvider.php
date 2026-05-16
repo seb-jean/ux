@@ -13,7 +13,7 @@ namespace Symfony\UX\Image\Provider\Local;
 
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\ProviderInterface;
-use Symfony\UX\StimulusBundle\Helper\StimulusHelper;
+use Symfony\UX\Image\Transformation;
 
 /**
  * Provider for locally-stored images, serving transformations via a Symfony route.
@@ -23,46 +23,57 @@ use Symfony\UX\StimulusBundle\Helper\StimulusHelper;
 final class LocalProvider implements ProviderInterface
 {
     public function __construct(
-        private readonly StimulusHelper $stimulus,
         private readonly string $endpoint = '/_image',
     ) {
     }
 
     public function renderImage(Image $image, array $attributes = []): string
     {
+        $src = $this->buildUrl($image->getSrc(), $image->getTransformation());
+
+        $attrs = array_merge(['src' => $src], $attributes);
+
         $imageData = $image->toArray();
-        $controllerValues = ['src' => $imageData['src']];
-
-        if (isset($imageData['alt'])) {
-            $controllerValues['alt'] = $imageData['alt'];
-        }
-        if (isset($imageData['width'])) {
-            $controllerValues['width'] = $imageData['width'];
-        }
-        if (isset($imageData['height'])) {
-            $controllerValues['height'] = $imageData['height'];
-        }
-        if (isset($imageData['loading'])) {
-            $controllerValues['loading'] = $imageData['loading'];
-        }
-        if (isset($imageData['transformation'])) {
-            $controllerValues['transformation'] = (object) $imageData['transformation'];
-        }
-
-        $controllerValues['provider-options'] = (object) ['endpoint' => $this->endpoint];
-
-        $stimulusAttributes = $this->stimulus->createStimulusAttributes();
-        $stimulusAttributes->addController('@symfony/ux-image/local', $controllerValues);
-
-        foreach ($attributes as $name => $value) {
-            if (true === $value) {
-                $stimulusAttributes->addAttribute($name, $name);
-            } elseif (false !== $value) {
-                $stimulusAttributes->addAttribute($name, $value);
+        foreach (['alt', 'width', 'height', 'loading'] as $key) {
+            if (isset($imageData[$key]) && !isset($attrs[$key])) {
+                $attrs[$key] = $imageData[$key];
             }
         }
 
-        return \sprintf('<img %s />', $stimulusAttributes);
+        $attrsString = implode(' ', array_map(
+            static fn (string $k, mixed $v) => \sprintf('%s="%s"', $k, htmlspecialchars((string) $v, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8')),
+            array_keys($attrs),
+            $attrs,
+        ));
+
+        return \sprintf('<img %s />', $attrsString);
+    }
+
+    private function buildUrl(string $src, ?Transformation $transformation): string
+    {
+        if (null === $transformation || $transformation->isEmpty()) {
+            return $src;
+        }
+
+        $params = ['src' => $src];
+
+        if (null !== $transformation->getWidth()) {
+            $params['w'] = $transformation->getWidth();
+        }
+        if (null !== $transformation->getHeight()) {
+            $params['h'] = $transformation->getHeight();
+        }
+        if (null !== $transformation->getFormat()) {
+            $params['format'] = $transformation->getFormat();
+        }
+        if (null !== $transformation->getQuality()) {
+            $params['q'] = $transformation->getQuality();
+        }
+        if (null !== $transformation->getFit()) {
+            $params['fit'] = $transformation->getFit();
+        }
+
+        return $this->endpoint.'?'.http_build_query($params);
     }
 
     public function __toString(): string

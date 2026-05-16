@@ -30,7 +30,7 @@ final class LocalProviderFactory extends AbstractProviderFactory implements Prov
 
         $endpoint = $dsn->getOption('endpoint', '/_image');
 
-        return new LocalProvider($this->stimulus, $endpoint);
+        return new LocalProvider($endpoint);
     }
 
     protected function getSupportedSchemes(): array
