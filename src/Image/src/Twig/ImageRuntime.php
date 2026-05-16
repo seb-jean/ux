@@ -13,6 +13,7 @@ namespace Symfony\UX\Image\Twig;
 
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Providers;
+use Symfony\UX\Image\Transformation;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -28,10 +29,72 @@ final class ImageRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * @param array<string, string|bool> $attributes
+     * @param string                     $src
+     * @param array{
+     *     alt?: string,
+     *     width?: int,
+     *     height?: int,
+     *     loading?: string,
+     *     provider?: string,
+     *     transform?: array{
+     *         width?: int,
+     *         height?: int,
+     *         format?: string,
+     *         quality?: int,
+     *         fit?: string,
+     *     },
+     * }                                $options
+     * @param array<string, string|bool> $attributes HTML attributes added to the <img> tag
      */
-    public function renderImage(Image $image, array $attributes = []): string
+    public function renderImage(string $src, array $options = [], array $attributes = []): string
     {
+        $image = new Image($src);
+
+        if (isset($options['alt'])) {
+            $image = $image->alt($options['alt']);
+        }
+        if (isset($options['width'])) {
+            $image = $image->width($options['width']);
+        }
+        if (isset($options['height'])) {
+            $image = $image->height($options['height']);
+        }
+        if (isset($options['loading'])) {
+            $image = $image->loading($options['loading']);
+        }
+        if (isset($options['provider'])) {
+            $image = $image->provider($options['provider']);
+        }
+        if (isset($options['transform']) && \is_array($options['transform'])) {
+            $image = $image->transform($this->buildTransformation($options['transform']));
+        }
+
         return $this->providers->renderImage($image, $attributes);
+    }
+
+    /**
+     * @param array{width?: int, height?: int, format?: string, quality?: int, fit?: string} $data
+     */
+    private function buildTransformation(array $data): Transformation
+    {
+        $t = Transformation::create();
+
+        if (isset($data['width'])) {
+            $t = $t->width($data['width']);
+        }
+        if (isset($data['height'])) {
+            $t = $t->height($data['height']);
+        }
+        if (isset($data['format'])) {
+            $t = $t->format($data['format']);
+        }
+        if (isset($data['quality'])) {
+            $t = $t->quality($data['quality']);
+        }
+        if (isset($data['fit'])) {
+            $t = $t->fit($data['fit']);
+        }
+
+        return $t;
     }
 }

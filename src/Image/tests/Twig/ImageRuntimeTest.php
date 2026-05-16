@@ -1,0 +1,71 @@
+<?php
+
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Symfony\UX\Image\Tests\Twig;
+
+use PHPUnit\Framework\TestCase;
+use Symfony\UX\Image\Provider\Local\LocalProvider;
+use Symfony\UX\Image\Provider\Providers;
+use Symfony\UX\Image\Twig\ImageRuntime;
+
+class ImageRuntimeTest extends TestCase
+{
+    private ImageRuntime $runtime;
+
+    protected function setUp(): void
+    {
+        $providers = new Providers(['default' => new LocalProvider()]);
+        $this->runtime = new ImageRuntime($providers);
+    }
+
+    public function testRenderWithSrcOnly(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg');
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+    }
+
+    public function testRenderWithOptions(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'alt' => 'A photo',
+            'width' => 800,
+            'height' => 600,
+            'loading' => 'eager',
+        ]);
+
+        $this->assertStringContainsString('alt="A photo"', $html);
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+        $this->assertStringContainsString('loading="eager"', $html);
+    }
+
+    public function testRenderWithTransform(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85, 'fit' => 'cover'],
+        ]);
+
+        $this->assertStringContainsString('src="/_image?', $html);
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringContainsString('q=85', $html);
+        $this->assertStringContainsString('fit=cover', $html);
+    }
+
+    public function testRenderWithExtraAttributes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [], ['class' => 'hero', 'id' => 'main-img']);
+
+        $this->assertStringContainsString('class="hero"', $html);
+        $this->assertStringContainsString('id="main-img"', $html);
+    }
+}
