@@ -16,9 +16,11 @@ namespace Symfony\UX\Image\Twig;
  *
  * Supports two syntaxes:
  *
- *   {% component 'UX:Image' with { src: '/img/photo.jpg', alt: 'Photo', transform: { width: 800, format: 'webp' } } %}
+ *   {% component 'UX:Image' with { src: '/img/photo.jpg', alt: 'Photo',
+ *       transform: { width: 800, format: 'webp' } } %}
  *
- *   <twig:UX:Image src="/img/photo.jpg" alt="Photo" />
+ *   <twig:UX:Image src="/img/photo.jpg" alt="Photo"
+ *       transform-width="800" transform-format="webp" transform-quality="85" transform-fit="cover" />
  *
  * @author Sébastien Jean <contact@seb-jean.fr>
  *
@@ -40,4 +42,15 @@ final class UXImageComponent
 
     /** @var array{width?: int, height?: int, format?: string, quality?: int, fit?: string}|null */
     public ?array $transform = null;
+
+    // Flat transform attributes for the <twig:UX:Image> HTML syntax
+    public ?int $transformWidth = null;
+
+    public ?int $transformHeight = null;
+
+    public ?string $transformFormat = null;
+
+    public ?int $transformQuality = null;
+
+    public ?string $transformFit = null;
 }

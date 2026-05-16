@@ -124,4 +124,52 @@ class ImageRuntimeTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->runtime->render(['alt' => 'Photo']);
     }
+
+    // --- <twig:UX:Image> flat transform-* attributes ---
+
+    public function testComponentRenderWithFlatTransformAttributes(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'transformWidth' => 800,
+            'transformHeight' => 600,
+            'transformFormat' => 'webp',
+            'transformQuality' => 85,
+            'transformFit' => 'cover',
+        ]);
+
+        $this->assertStringContainsString('src="/_image?', $html);
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('h=600', $html);
+        $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringContainsString('q=85', $html);
+        $this->assertStringContainsString('fit=cover', $html);
+    }
+
+    public function testFlatTransformAttributesMergeWithTransformArray(): void
+    {
+        // transform array sets width, flat attribute overrides with height
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'transform' => ['width' => 800, 'format' => 'jpeg'],
+            'transformFormat' => 'webp', // overrides the array value
+        ]);
+
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringNotContainsString('format=jpeg', $html);
+    }
+
+    public function testFlatTransformAttributesDoNotLeakAsHtmlAttributes(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'transformWidth' => 800,
+            'class' => 'hero',
+        ]);
+
+        $this->assertStringNotContainsString('transformWidth', $html);
+        $this->assertStringNotContainsString('transform-width', $html);
+        $this->assertStringContainsString('class="hero"', $html);
+    }
 }
