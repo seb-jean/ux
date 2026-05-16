@@ -3,7 +3,7 @@
         'name' => 'symfony/ux-image',
         'pretty_version' => '3.x-dev',
         'version' => '3.9999999.9999999.9999999-dev',
-        'reference' => '8da5321343438b6e654d8376b5215310869bb894',
+        'reference' => '70b411fa90b1c6c580f0e40ddb976e01e4433fa6',
         'type' => 'symfony-bundle',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -53,7 +53,7 @@
         'phpunit/php-code-coverage' => array(
             'pretty_version' => '12.5.x-dev',
             'version' => '12.5.9999999.9999999-dev',
-            'reference' => 'a559792f911724a106fe0e74d3d01054758227c6',
+            'reference' => '274a3cf1ba7fc4c30ff77410ec6524fc1bc03605',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-code-coverage',
             'aliases' => array(),
@@ -71,7 +71,7 @@
         'phpunit/php-invoker' => array(
             'pretty_version' => '6.0.x-dev',
             'version' => '6.0.9999999.9999999-dev',
-            'reference' => '3820abdbc691339e4d17b9ac7158d0cd3c4ff2d2',
+            'reference' => '0da089c23cc06eb4ed59925008187958c1f9f1f1',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-invoker',
             'aliases' => array(),
@@ -80,7 +80,7 @@
         'phpunit/php-text-template' => array(
             'pretty_version' => '5.0.x-dev',
             'version' => '5.0.9999999.9999999-dev',
-            'reference' => 'a2c8a52e012b9eb0a704e7d144c1e6d60f03485b',
+            'reference' => 'd1f5c7e16e43eece2e83145a8002c7809d752bdf',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-text-template',
             'aliases' => array(),
@@ -89,7 +89,7 @@
         'phpunit/php-timer' => array(
             'pretty_version' => '8.0.x-dev',
             'version' => '8.0.9999999.9999999-dev',
-            'reference' => 'e7e75d1ca48ce254b935a98ed61c5838ac94073c',
+            'reference' => 'c8a86592bc7b881564c44d9bcc55bda73cec2ed5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-timer',
             'aliases' => array(),
@@ -181,7 +181,7 @@
         'sebastian/cli-parser' => array(
             'pretty_version' => '4.2.x-dev',
             'version' => '4.2.9999999.9999999-dev',
-            'reference' => 'f70b4b4a330c2f0998de5c889366e673a44e68b6',
+            'reference' => '9883e9440eba8fa9ed4803b6c0ef6c16d83498c7',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/cli-parser',
             'aliases' => array(),
@@ -190,7 +190,7 @@
         'sebastian/comparator' => array(
             'pretty_version' => '7.1.x-dev',
             'version' => '7.1.9999999.9999999-dev',
-            'reference' => '730c4ef76742f4474545d0f8b6f0f6eef73d1b21',
+            'reference' => 'fb7cf13c867774fd9c26bdeecd4ed3cf63b49d07',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/comparator',
             'aliases' => array(),
@@ -199,7 +199,7 @@
         'sebastian/complexity' => array(
             'pretty_version' => '5.0.x-dev',
             'version' => '5.0.9999999.9999999-dev',
-            'reference' => '6dea2fa45c3b830a3722e66321c65b609b70d776',
+            'reference' => '7bbdaab49814e12d289bfc30fa6184dac70a9e99',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/complexity',
             'aliases' => array(),
@@ -208,7 +208,7 @@
         'sebastian/diff' => array(
             'pretty_version' => '7.0.x-dev',
             'version' => '7.0.9999999.9999999-dev',
-            'reference' => 'aea4a2e1d009373ca7543d08c955aee3ec2cd6bc',
+            'reference' => '8faafdfb0c404a91c162e4f99f88312d2c0d2c2d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/diff',
             'aliases' => array(),
@@ -217,7 +217,7 @@
         'sebastian/environment' => array(
             'pretty_version' => '8.1.x-dev',
             'version' => '8.1.9999999.9999999-dev',
-            'reference' => '746dc707dbfdc86adf808c548530afc9af00c99c',
+            'reference' => '23e240778d6e9e385fd2284c160d8c4a6fd34be0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/environment',
             'aliases' => array(),
@@ -226,7 +226,7 @@
         'sebastian/exporter' => array(
             'pretty_version' => '7.0.x-dev',
             'version' => '7.0.9999999.9999999-dev',
-            'reference' => 'baa9a4396f420e048af7304abcb4cc124af8385a',
+            'reference' => '7e38e043ea896c6518487ad48c885843b7ef4ddb',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/exporter',
             'aliases' => array(),
@@ -235,7 +235,7 @@
         'sebastian/global-state' => array(
             'pretty_version' => '8.0.x-dev',
             'version' => '8.0.9999999.9999999-dev',
-            'reference' => '71728e718d3da944098ed45dc9d4e1b18985173a',
+            'reference' => '3431a23567e77cb1c0fc4e4944cb38aa0aa16e89',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/global-state',
             'aliases' => array(),
@@ -244,7 +244,7 @@
         'sebastian/lines-of-code' => array(
             'pretty_version' => '4.0.x-dev',
             'version' => '4.0.9999999.9999999-dev',
-            'reference' => 'f66d9c68b26245c47fccf26065f79a6e297f7f6f',
+            'reference' => '029a6c1d47aea371303e8b71d315760e40b5b0d9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/lines-of-code',
             'aliases' => array(),
@@ -253,7 +253,7 @@
         'sebastian/object-enumerator' => array(
             'pretty_version' => '7.0.x-dev',
             'version' => '7.0.9999999.9999999-dev',
-            'reference' => 'af76303f287fa19755783e4218af4b46e0bc9718',
+            'reference' => '423b3abac6354ee31f85b2e795a33b26122b549c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/object-enumerator',
             'aliases' => array(),
@@ -262,7 +262,7 @@
         'sebastian/object-reflector' => array(
             'pretty_version' => '5.0.x-dev',
             'version' => '5.0.9999999.9999999-dev',
-            'reference' => '3e5035cea4282483d88d934cb9d997a5af30536d',
+            'reference' => '2961db13b8aec68984694f22eb332012ade0f7f3',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/object-reflector',
             'aliases' => array(),
@@ -271,7 +271,7 @@
         'sebastian/recursion-context' => array(
             'pretty_version' => '7.0.x-dev',
             'version' => '7.0.9999999.9999999-dev',
-            'reference' => 'd7b670891a8126cef66925aed3074bd363d0f99c',
+            'reference' => '16e7afc766784480fa3561026c8dc337d3cea130',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/recursion-context',
             'aliases' => array(),
@@ -280,7 +280,7 @@
         'sebastian/type' => array(
             'pretty_version' => '6.0.x-dev',
             'version' => '6.0.9999999.9999999-dev',
-            'reference' => '19206ebcf038226cfc5908a7d48e0ddf3a4de318',
+            'reference' => '4c270df295afaa8dc18c74ddcfc487c3c5f045d6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/type',
             'aliases' => array(),
@@ -289,7 +289,7 @@
         'sebastian/version' => array(
             'pretty_version' => '6.0.x-dev',
             'version' => '6.0.9999999.9999999-dev',
-            'reference' => 'bf0c3f4d3fec5fde9445979088c79cf85b5bc85f',
+            'reference' => 'f9b80a6d576ce774e253f7cdc34da8c33c3facd6',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/version',
             'aliases' => array(),
@@ -518,7 +518,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/routing',
             'aliases' => array(),
-            'dev_requirement' => false,
+            'dev_requirement' => true,
         ),
         'symfony/service-contracts' => array(
             'pretty_version' => 'dev-main',
@@ -587,7 +587,7 @@
         'symfony/ux-image' => array(
             'pretty_version' => '3.x-dev',
             'version' => '3.9999999.9999999.9999999-dev',
-            'reference' => '8da5321343438b6e654d8376b5215310869bb894',
+            'reference' => '70b411fa90b1c6c580f0e40ddb976e01e4433fa6',
             'type' => 'symfony-bundle',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
