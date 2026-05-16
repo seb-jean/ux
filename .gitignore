@@ -11,3 +11,4 @@ node_modules
 /browsers
 playwright-report/
 playwright-output/
+src/Image/.phpunit.cache/
