@@ -1,0 +1,50 @@
+{
+    "name": "symfony/ux-image",
+    "type": "symfony-bundle",
+    "description": "Easily embed and transform images in your Symfony application",
+    "keywords": [
+        "symfony-ux",
+        "image",
+        "transformations"
+    ],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sébastien Jean",
+            "email": "contact@seb-jean.fr"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Symfony\\UX\\Image\\": "src/"
+        },
+        "exclude-from-classmap": []
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Symfony\\UX\\Image\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.4",
+        "symfony/stimulus-bundle": "^2.18.1|^3.0"
+    },
+    "require-dev": {
+        "symfony/asset-mapper": "^7.4|^8.0",
+        "symfony/framework-bundle": "^7.4|^8.0",
+        "symfony/twig-bundle": "^7.4|^8.0",
+        "phpunit/phpunit": "^11.1|^12.0"
+    },
+    "extra": {
+        "thanks": {
+            "name": "symfony/ux",
+            "url": "https://github.com/symfony/ux"
+        }
+    },
+    "minimum-stability": "dev"
+}

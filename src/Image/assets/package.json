@@ -1,0 +1,55 @@
+{
+    "name": "@symfony/ux-image",
+    "description": "Easily embed and transform images in your Symfony application.",
+    "license": "MIT",
+    "version": "3.0.0",
+    "keywords": [
+        "symfony-ux",
+        "image",
+        "transformations"
+    ],
+    "homepage": "https://ux.symfony.com/image",
+    "repository": "https://github.com/symfony/ux",
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "main": "dist/abstract_image_controller.js",
+    "types": "dist/abstract_image_controller.d.ts",
+    "exports": {
+        ".": "./dist/abstract_image_controller.js",
+        "./local": "./dist/local_controller.js"
+    },
+    "scripts": {
+        "build": "node ../../../bin/build_package.ts .",
+        "watch": "node ../../../bin/build_package.ts . --watch",
+        "test": "pnpm run test:unit",
+        "test:unit": "../../../bin/unit_test_package.sh ."
+    },
+    "symfony": {
+        "controllers": {
+            "local": {
+                "main": "dist/local_controller.js",
+                "webpackMode": "eager",
+                "fetch": "eager",
+                "enabled": true
+            }
+        },
+        "importmap": {
+            "@hotwired/stimulus": "^3.0.0"
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0"
+    },
+    "devDependencies": {
+        "@hotwired/stimulus": "^3.0.0",
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/user-event": "^14.6.1",
+        "jsdom": "^26.1.0",
+        "tslib": "^2.8.1",
+        "typescript": "^5.8.3",
+        "vitest": "^4.1.0"
+    }
+}
