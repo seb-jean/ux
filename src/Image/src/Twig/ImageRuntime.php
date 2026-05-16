@@ -31,39 +31,16 @@ final class ImageRuntime implements RuntimeExtensionInterface
     /**
      * Called by the Twig Component renderer — receives all component props as $args,
      * separates known image options from extra HTML attributes.
-     *
-     * Flat transform-* attributes (used in the <twig:UX:Image> HTML syntax) are merged
-     * into the transform array, taking precedence over a transform array if both are given:
-     *
-     *   <twig:UX:Image src="…" transform-width="800" transform-format="webp" />
      */
     public function render(array $args = []): string
     {
-        $flatTransformKeys = ['transformWidth', 'transformHeight', 'transformFormat', 'transformQuality', 'transformFit'];
-        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'provider', 'transform', ...$flatTransformKeys];
+        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'provider', 'transform'];
 
         $options = array_intersect_key($args, array_flip($knownOptions));
         $attributes = array_diff_key($args, array_flip($knownOptions));
 
         $src = $options['src'] ?? throw new \InvalidArgumentException('The "src" option is required when using the UX:Image component.');
         unset($options['src']);
-
-        // Merge flat transform-* props into the transform array
-        $flatTransform = array_filter([
-            'width' => $options['transformWidth'] ?? null,
-            'height' => $options['transformHeight'] ?? null,
-            'format' => $options['transformFormat'] ?? null,
-            'quality' => $options['transformQuality'] ?? null,
-            'fit' => $options['transformFit'] ?? null,
-        ], static fn (mixed $v) => null !== $v);
-
-        foreach ($flatTransformKeys as $key) {
-            unset($options[$key]);
-        }
-
-        if ([] !== $flatTransform) {
-            $options['transform'] = array_merge($options['transform'] ?? [], $flatTransform);
-        }
 
         return $this->renderImage($src, $options, $attributes);
     }

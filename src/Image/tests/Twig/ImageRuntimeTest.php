@@ -26,6 +26,8 @@ class ImageRuntimeTest extends TestCase
         $this->runtime = new ImageRuntime($providers);
     }
 
+    // --- ux_image() Twig function ---
+
     public function testRenderWithSrcOnly(): void
     {
         $html = $this->runtime->renderImage('/images/photo.jpg');
@@ -69,7 +71,7 @@ class ImageRuntimeTest extends TestCase
         $this->assertStringContainsString('id="main-img"', $html);
     }
 
-    // --- Twig Component render() ---
+    // --- {% component %} and <twig:UX:Image> via render() ---
 
     public function testComponentRenderWithSrcOnly(): void
     {
@@ -97,14 +99,16 @@ class ImageRuntimeTest extends TestCase
 
     public function testComponentRenderWithTransform(): void
     {
+        // {% component %} and <twig:UX:Image :transform="{ width: 800, format: 'webp' }" />
         $html = $this->runtime->render([
             'src' => '/images/photo.jpg',
-            'transform' => ['width' => 800, 'format' => 'webp'],
+            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85],
         ]);
 
         $this->assertStringContainsString('src="/_image?', $html);
         $this->assertStringContainsString('w=800', $html);
         $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringContainsString('q=85', $html);
     }
 
     public function testComponentRenderExtraArgsBecomHtmlAttributes(): void
@@ -123,71 +127,5 @@ class ImageRuntimeTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->runtime->render(['alt' => 'Photo']);
-    }
-
-    // --- <twig:UX:Image :transform="{ ... }"> array syntax ---
-
-    public function testComponentRenderWithTransformArray(): void
-    {
-        // Simulates: <twig:UX:Image src="…" :transform="{ width: 800, format: 'webp' }" />
-        // The ":" prefix evaluates the value as a Twig expression, so TwigComponent
-        // passes transform as a native PHP array to render().
-        $html = $this->runtime->render([
-            'src' => '/images/photo.jpg',
-            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85],
-        ]);
-
-        $this->assertStringContainsString('src="/_image?', $html);
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringContainsString('q=85', $html);
-    }
-
-    // --- <twig:UX:Image> flat transform-* attributes ---
-
-    public function testComponentRenderWithFlatTransformAttributes(): void
-    {
-        $html = $this->runtime->render([
-            'src' => '/images/photo.jpg',
-            'transformWidth' => 800,
-            'transformHeight' => 600,
-            'transformFormat' => 'webp',
-            'transformQuality' => 85,
-            'transformFit' => 'cover',
-        ]);
-
-        $this->assertStringContainsString('src="/_image?', $html);
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('h=600', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringContainsString('q=85', $html);
-        $this->assertStringContainsString('fit=cover', $html);
-    }
-
-    public function testFlatTransformAttributesMergeWithTransformArray(): void
-    {
-        // transform array sets width, flat attribute overrides with height
-        $html = $this->runtime->render([
-            'src' => '/images/photo.jpg',
-            'transform' => ['width' => 800, 'format' => 'jpeg'],
-            'transformFormat' => 'webp', // overrides the array value
-        ]);
-
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringNotContainsString('format=jpeg', $html);
-    }
-
-    public function testFlatTransformAttributesDoNotLeakAsHtmlAttributes(): void
-    {
-        $html = $this->runtime->render([
-            'src' => '/images/photo.jpg',
-            'transformWidth' => 800,
-            'class' => 'hero',
-        ]);
-
-        $this->assertStringNotContainsString('transformWidth', $html);
-        $this->assertStringNotContainsString('transform-width', $html);
-        $this->assertStringContainsString('class="hero"', $html);
     }
 }
