@@ -14,6 +14,7 @@ namespace Symfony\UX\Image\Tests\Provider;
 use PHPUnit\Framework\TestCase;
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Local\LocalProvider;
+use Symfony\UX\Image\Source;
 use Symfony\UX\Image\Transformation;
 
 class LocalProviderTest extends TestCase
@@ -25,7 +26,7 @@ class LocalProviderTest extends TestCase
 
         $html = $provider->renderImage($image);
 
-        $this->assertSame('<img src="/images/photo.jpg" alt="A photo" loading="lazy" />', $html);
+        $this->assertSame('<img src="/images/photo.jpg" alt="A photo" loading="lazy" decoding="async" />', $html);
     }
 
     public function testRenderImageWithTransformation(): void
@@ -114,5 +115,77 @@ class LocalProviderTest extends TestCase
     {
         $provider = new LocalProvider();
         $this->assertSame('local', (string) $provider);
+    }
+
+    public function testRenderImageWithSourcesReturnsPictureTag(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg', 'A photo'))
+            ->addSource(Source::create('/images/photo.avif')->type('image/avif'))
+            ->addSource(Source::create('/images/photo.webp')->type('image/webp'));
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringStartsWith('<picture>', $html);
+        $this->assertStringEndsWith('</picture>', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.avif" type="image/avif">', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.webp" type="image/webp">', $html);
+        $this->assertStringContainsString('<img src="/images/photo.jpg"', $html);
+        $this->assertStringContainsString('alt="A photo"', $html);
+    }
+
+    public function testRenderImageWithSourceIncludesMediaAndSizes(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->addSource(
+                Source::create('/images/photo-large.webp')
+                    ->type('image/webp')
+                    ->media('(min-width: 800px)')
+                    ->sizes('80vw')
+            );
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('type="image/webp"', $html);
+        $this->assertStringContainsString('media="(min-width: 800px)"', $html);
+        $this->assertStringContainsString('sizes="80vw"', $html);
+    }
+
+    public function testRenderImageSourcesOrderIsPreserved(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->addSource(Source::create('/images/photo.avif')->type('image/avif'))
+            ->addSource(Source::create('/images/photo.webp')->type('image/webp'));
+
+        $html = $provider->renderImage($image);
+
+        $avifPos = strpos($html, 'image/avif');
+        $webpPos = strpos($html, 'image/webp');
+
+        $this->assertNotFalse($avifPos);
+        $this->assertNotFalse($webpPos);
+        $this->assertLessThan($webpPos, $avifPos, 'avif source should appear before webp source');
+    }
+
+    public function testRenderImageWithDecodingAttribute(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))->decoding('sync');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('decoding="sync"', $html);
+    }
+
+    public function testRenderImageDefaultDecodingIsAsync(): void
+    {
+        $provider = new LocalProvider();
+        $image = new Image('/images/photo.jpg');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('decoding="async"', $html);
     }
 }

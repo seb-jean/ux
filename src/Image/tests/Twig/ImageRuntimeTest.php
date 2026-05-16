@@ -128,4 +128,73 @@ class ImageRuntimeTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->runtime->render(['alt' => 'Photo']);
     }
+
+    // --- sources / <picture> support ---
+
+    public function testRenderImageWithSourcesReturnsPictureTag(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif'],
+                ['srcset' => '/images/photo.webp', 'type' => 'image/webp'],
+            ],
+        ]);
+
+        $this->assertStringStartsWith('<picture>', $html);
+        $this->assertStringEndsWith('</picture>', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.avif" type="image/avif">', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.webp" type="image/webp">', $html);
+        $this->assertStringContainsString('<img src="/images/photo.jpg"', $html);
+    }
+
+    public function testRenderImageWithSourceIncludesMediaAndSizes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                [
+                    'srcset' => '/images/photo.webp',
+                    'type' => 'image/webp',
+                    'media' => '(min-width: 800px)',
+                    'sizes' => '80vw',
+                ],
+            ],
+        ]);
+
+        $this->assertStringContainsString('type="image/webp"', $html);
+        $this->assertStringContainsString('media="(min-width: 800px)"', $html);
+        $this->assertStringContainsString('sizes="80vw"', $html);
+    }
+
+    public function testComponentRenderWithSources(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif'],
+                ['srcset' => '/images/photo.webp', 'type' => 'image/webp'],
+            ],
+        ]);
+
+        $this->assertStringStartsWith('<picture>', $html);
+        $this->assertStringEndsWith('</picture>', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.avif" type="image/avif">', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.webp" type="image/webp">', $html);
+    }
+
+    public function testRenderImageWithDecodingOption(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', ['decoding' => 'sync']);
+
+        $this->assertStringContainsString('decoding="sync"', $html);
+    }
+
+    public function testComponentRenderWithDecodingOption(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'decoding' => 'auto',
+        ]);
+
+        $this->assertStringContainsString('decoding="auto"', $html);
+    }
 }

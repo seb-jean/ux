@@ -13,6 +13,7 @@ namespace Symfony\UX\Image\Twig;
 
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Providers;
+use Symfony\UX\Image\Source;
 use Symfony\UX\Image\Transformation;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -34,7 +35,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
      */
     public function render(array $args = []): string
     {
-        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'provider', 'transform'];
+        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'decoding', 'provider', 'transform', 'sources'];
 
         $options = array_intersect_key($args, array_flip($knownOptions));
         $attributes = array_diff_key($args, array_flip($knownOptions));
@@ -52,6 +53,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
      *     width?: int,
      *     height?: int,
      *     loading?: string,
+     *     decoding?: string,
      *     provider?: string,
      *     transform?: array{
      *         width?: int,
@@ -60,6 +62,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
      *         quality?: int,
      *         fit?: string,
      *     },
+     *     sources?: array<array{srcset: string, type?: string, media?: string, sizes?: string}>,
      * }                                $options
      * @param array<string, string|bool> $attributes HTML attributes added to the <img> tag
      */
@@ -79,11 +82,19 @@ final class ImageRuntime implements RuntimeExtensionInterface
         if (isset($options['loading'])) {
             $image = $image->loading($options['loading']);
         }
+        if (isset($options['decoding'])) {
+            $image = $image->decoding($options['decoding']);
+        }
         if (isset($options['provider'])) {
             $image = $image->provider($options['provider']);
         }
         if (isset($options['transform']) && \is_array($options['transform'])) {
             $image = $image->transform($this->buildTransformation($options['transform']));
+        }
+        if (isset($options['sources']) && \is_array($options['sources'])) {
+            foreach ($options['sources'] as $sourceData) {
+                $image = $image->addSource($this->buildSource($sourceData));
+            }
         }
 
         return $this->providers->renderImage($image, $attributes);
@@ -113,5 +124,25 @@ final class ImageRuntime implements RuntimeExtensionInterface
         }
 
         return $t;
+    }
+
+    /**
+     * @param array{srcset: string, type?: string, media?: string, sizes?: string} $data
+     */
+    private function buildSource(array $data): Source
+    {
+        $source = Source::create($data['srcset']);
+
+        if (isset($data['type'])) {
+            $source = $source->type($data['type']);
+        }
+        if (isset($data['media'])) {
+            $source = $source->media($data['media']);
+        }
+        if (isset($data['sizes'])) {
+            $source = $source->sizes($data['sizes']);
+        }
+
+        return $source;
     }
 }

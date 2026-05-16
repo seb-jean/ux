@@ -25,6 +25,8 @@ final class Image
         private ?int $height = null,
         private ?Transformation $transformation = null,
         private string $loading = 'lazy',
+        private string $decoding = 'async',
+        private array $sources = [],
         private ?string $provider = null,
     ) {
     }
@@ -80,6 +82,36 @@ final class Image
         return $clone;
     }
 
+    /**
+     * @param 'async'|'sync'|'auto' $decoding
+     */
+    public function decoding(string $decoding): self
+    {
+        $clone = clone $this;
+        $clone->decoding = $decoding;
+
+        return $clone;
+    }
+
+    public function addSource(Source $source): self
+    {
+        $clone = clone $this;
+        $clone->sources[] = $source;
+
+        return $clone;
+    }
+
+    /**
+     * @param Source[] $sources
+     */
+    public function sources(array $sources): self
+    {
+        $clone = clone $this;
+        $clone->sources = $sources;
+
+        return $clone;
+    }
+
     public function provider(string $provider): self
     {
         $clone = clone $this;
@@ -103,11 +135,25 @@ final class Image
         return $this->transformation;
     }
 
+    /**
+     * @return Source[]
+     */
+    public function getSources(): array
+    {
+        return $this->sources;
+    }
+
+    public function hasSources(): bool
+    {
+        return [] !== $this->sources;
+    }
+
     public function toArray(): array
     {
         $data = [
             'src' => $this->src,
             'loading' => $this->loading,
+            'decoding' => $this->decoding,
         ];
 
         if (null !== $this->alt) {

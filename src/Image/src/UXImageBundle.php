@@ -15,7 +15,6 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
 
 /**
@@ -33,10 +32,6 @@ final class UXImageBundle extends AbstractBundle
                     ->defaultValue('local://default')
                     ->info('The DSN of the image provider to use (e.g. "local://default" or "local://default?endpoint=/_image").')
                 ->end()
-                ->scalarNode('public_dir')
-                    ->defaultNull()
-                    ->info('Absolute path to the public directory. Defaults to "%kernel.project_dir%/public".')
-                ->end()
             ->end()
         ;
     }
@@ -49,19 +44,8 @@ final class UXImageBundle extends AbstractBundle
             $container->import('../config/twig_component.php');
         }
 
-        $publicDir = $config['public_dir'] ?? '%kernel.project_dir%/public';
-
         $container->services()
             ->get('ux_image.providers')
             ->arg(0, ['default' => $config['provider']]);
-
-        $container->services()
-            ->get('ux_image.controller.transform')
-            ->arg(1, $publicDir);
-    }
-
-    public function loadRoutes(RoutingConfigurator $routes): void
-    {
-        $routes->import(__DIR__.'/../config/routes.php');
     }
 }

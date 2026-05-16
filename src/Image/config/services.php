@@ -11,25 +11,14 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Symfony\UX\Image\Controller\ImageTransformController;
 use Symfony\UX\Image\Provider\Local\LocalProviderFactory;
 use Symfony\UX\Image\Provider\Provider;
 use Symfony\UX\Image\Provider\Providers;
-use Symfony\UX\Image\Transformer\ImageTransformer;
 use Symfony\UX\Image\Twig\ImageExtension;
 use Symfony\UX\Image\Twig\ImageRuntime;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()
-        ->set('ux_image.transformer', ImageTransformer::class)
-
-        ->set('ux_image.controller.transform', ImageTransformController::class)
-            ->args([
-                service('ux_image.transformer'),
-                abstract_arg('public directory'),
-            ])
-            ->tag('controller.service_arguments')
-
         ->set('ux_image.providers', Providers::class)
             ->factory([service('ux_image.provider'), 'fromStrings'])
             ->args([

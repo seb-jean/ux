@@ -29,24 +29,33 @@ final class LocalProvider implements ProviderInterface
 
     public function renderImage(Image $image, array $attributes = []): string
     {
+        $imageData = $image->toArray();
         $src = $this->buildUrl($image->getSrc(), $image->getTransformation());
 
-        $attrs = array_merge(['src' => $src], $attributes);
-
-        $imageData = $image->toArray();
-        foreach (['alt', 'width', 'height', 'loading'] as $key) {
-            if (isset($imageData[$key]) && !isset($attrs[$key])) {
-                $attrs[$key] = $imageData[$key];
+        $imgAttrs = ['src' => $src];
+        foreach (['alt', 'width', 'height', 'loading', 'decoding'] as $key) {
+            if (isset($imageData[$key]) && !isset($attributes[$key])) {
+                $imgAttrs[$key] = $imageData[$key];
+            }
+        }
+        foreach ($attributes as $k => $v) {
+            if (!isset($imgAttrs[$k])) {
+                $imgAttrs[$k] = $v;
             }
         }
 
-        $attrsString = implode(' ', array_map(
-            static fn (string $k, mixed $v) => \sprintf('%s="%s"', $k, htmlspecialchars((string) $v, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8')),
-            array_keys($attrs),
-            $attrs,
-        ));
+        $imgTag = \sprintf('<img %s />', $this->buildAttrString($imgAttrs));
 
-        return \sprintf('<img %s />', $attrsString);
+        if (!$image->hasSources()) {
+            return $imgTag;
+        }
+
+        $sources = '';
+        foreach ($image->getSources() as $source) {
+            $sources .= \sprintf('<source %s>', $this->buildAttrString($source->toArray()));
+        }
+
+        return \sprintf('<picture>%s%s</picture>', $sources, $imgTag);
     }
 
     private function buildUrl(string $src, ?Transformation $transformation): string
@@ -74,6 +83,15 @@ final class LocalProvider implements ProviderInterface
         }
 
         return $this->endpoint.'?'.http_build_query($params);
+    }
+
+    private function buildAttrString(array $attrs): string
+    {
+        return implode(' ', array_map(
+            static fn (string $k, mixed $v) => \sprintf('%s="%s"', $k, htmlspecialchars((string) $v, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8')),
+            array_keys($attrs),
+            $attrs,
+        ));
     }
 
     public function __toString(): string

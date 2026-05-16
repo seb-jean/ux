@@ -22,6 +22,13 @@ namespace Symfony\UX\Image\Twig;
  *
  *   <twig:UX:Image src="/img/photo.jpg" :transform="{ width: 800, format: 'webp' }" />
  *
+ * For <picture> support with multiple sources:
+ *
+ *   <twig:UX:Image src="/img/photo.jpg" :sources="[
+ *       { srcset: '/img/photo.avif', type: 'image/avif' },
+ *       { srcset: '/img/photo.webp', type: 'image/webp' },
+ *   ]" />
+ *
  * Any extra attribute is forwarded as an HTML attribute on the rendered <img>.
  *
  * @author Sébastien Jean <contact@seb-jean.fr>
@@ -40,8 +47,13 @@ final class UXImageComponent
 
     public ?string $loading = null;
 
+    public ?string $decoding = null;
+
     public ?string $provider = null;
 
     /** @var array{width?: int, height?: int, format?: string, quality?: int, fit?: string}|null */
     public ?array $transform = null;
+
+    /** @var array<array{srcset: string, type?: string, media?: string, sizes?: string}>|null */
+    public ?array $sources = null;
 }
