@@ -49,8 +49,15 @@ final class UXImageComponent
 
     public ?string $decoding = null;
 
+    public ?string $srcset = null;
+
+    public ?string $sizes = null;
+
+    /** @var 'high'|'low'|'auto'|null */
+    public ?string $fetchpriority = null;
+
     public ?string $provider = null;
 
-    /** @var array<array{srcset: string, type?: string, media?: string, sizes?: string}>|null */
+    /** @var array<array{srcset: string, type?: string, media?: string, sizes?: string, width?: int, height?: int}>|null */
     public ?array $sources = null;
 }

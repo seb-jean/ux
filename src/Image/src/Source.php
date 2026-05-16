@@ -23,6 +23,8 @@ final class Source
         private readonly ?string $type = null,
         private readonly ?string $media = null,
         private readonly ?string $sizes = null,
+        private readonly ?int $width = null,
+        private readonly ?int $height = null,
     ) {
     }
 
@@ -33,23 +35,33 @@ final class Source
 
     public function type(string $type): self
     {
-        return new self($this->srcset, $type, $this->media, $this->sizes);
+        return new self($this->srcset, $type, $this->media, $this->sizes, $this->width, $this->height);
     }
 
     public function media(string $media): self
     {
-        return new self($this->srcset, $this->type, $media, $this->sizes);
+        return new self($this->srcset, $this->type, $media, $this->sizes, $this->width, $this->height);
     }
 
     public function sizes(string $sizes): self
     {
-        return new self($this->srcset, $this->type, $this->media, $sizes);
+        return new self($this->srcset, $this->type, $this->media, $sizes, $this->width, $this->height);
+    }
+
+    public function width(int $width): self
+    {
+        return new self($this->srcset, $this->type, $this->media, $this->sizes, $width, $this->height);
+    }
+
+    public function height(int $height): self
+    {
+        return new self($this->srcset, $this->type, $this->media, $this->sizes, $this->width, $height);
     }
 
     /**
      * Returns only non-null attribute values.
      *
-     * @return array<string, string>
+     * @return array<string, string|int>
      */
     public function toArray(): array
     {
@@ -63,6 +75,12 @@ final class Source
         }
         if (null !== $this->sizes) {
             $data['sizes'] = $this->sizes;
+        }
+        if (null !== $this->width) {
+            $data['width'] = $this->width;
+        }
+        if (null !== $this->height) {
+            $data['height'] = $this->height;
         }
 
         return $data;

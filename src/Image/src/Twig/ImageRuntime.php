@@ -34,7 +34,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
      */
     public function render(array $args = []): string
     {
-        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'decoding', 'provider', 'sources'];
+        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'decoding', 'srcset', 'sizes', 'fetchpriority', 'provider', 'sources'];
 
         $options = array_intersect_key($args, array_flip($knownOptions));
         $attributes = array_diff_key($args, array_flip($knownOptions));
@@ -53,8 +53,11 @@ final class ImageRuntime implements RuntimeExtensionInterface
      *     height?: int,
      *     loading?: string,
      *     decoding?: string,
+     *     srcset?: string,
+     *     sizes?: string,
+     *     fetchpriority?: string,
      *     provider?: string,
-     *     sources?: array<array{srcset: string, type?: string, media?: string, sizes?: string}>,
+     *     sources?: array<array{srcset: string, type?: string, media?: string, sizes?: string, width?: int, height?: int}>,
      * }                                $options
      * @param array<string, string|bool> $attributes HTML attributes added to the <img> tag
      */
@@ -77,6 +80,15 @@ final class ImageRuntime implements RuntimeExtensionInterface
         if (isset($options['decoding'])) {
             $image = $image->decoding($options['decoding']);
         }
+        if (isset($options['srcset'])) {
+            $image = $image->srcset($options['srcset']);
+        }
+        if (isset($options['sizes'])) {
+            $image = $image->sizes($options['sizes']);
+        }
+        if (isset($options['fetchpriority'])) {
+            $image = $image->fetchpriority($options['fetchpriority']);
+        }
         if (isset($options['provider'])) {
             $image = $image->provider($options['provider']);
         }
@@ -90,7 +102,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * @param array{srcset: string, type?: string, media?: string, sizes?: string} $data
+     * @param array{srcset: string, type?: string, media?: string, sizes?: string, width?: int, height?: int} $data
      */
     private function buildSource(array $data): Source
     {
@@ -104,6 +116,12 @@ final class ImageRuntime implements RuntimeExtensionInterface
         }
         if (isset($data['sizes'])) {
             $source = $source->sizes($data['sizes']);
+        }
+        if (isset($data['width'])) {
+            $source = $source->width($data['width']);
+        }
+        if (isset($data['height'])) {
+            $source = $source->height($data['height']);
         }
 
         return $source;

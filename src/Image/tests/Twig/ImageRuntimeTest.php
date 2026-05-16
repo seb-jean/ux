@@ -170,4 +170,48 @@ class ImageRuntimeTest extends TestCase
 
         $this->assertStringContainsString('decoding="auto"', $html);
     }
+
+    public function testRenderImageWithSrcsetAndSizes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'srcset' => '/images/photo-300.jpg 300w, /images/photo-900.jpg 900w',
+            'sizes' => '(max-width: 600px) 100vw, 50vw',
+        ]);
+
+        $this->assertStringContainsString('srcset=', $html);
+        $this->assertStringContainsString('sizes="(max-width: 600px) 100vw, 50vw"', $html);
+    }
+
+    public function testRenderImageWithFetchpriority(): void
+    {
+        $html = $this->runtime->renderImage('/images/hero.jpg', ['fetchpriority' => 'high']);
+
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+    }
+
+    public function testRenderImageWithSourceWidthAndHeight(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif', 'width' => 1200, 'height' => 600],
+            ],
+        ]);
+
+        $this->assertStringContainsString('width="1200"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+    }
+
+    public function testComponentRenderWithSrcsetSizesAndFetchpriority(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/hero.jpg',
+            'srcset' => '/images/hero-600.jpg 600w, /images/hero-1200.jpg 1200w',
+            'sizes' => '100vw',
+            'fetchpriority' => 'high',
+        ]);
+
+        $this->assertStringContainsString('srcset=', $html);
+        $this->assertStringContainsString('sizes="100vw"', $html);
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+    }
 }

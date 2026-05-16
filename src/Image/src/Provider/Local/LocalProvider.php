@@ -24,7 +24,7 @@ final class LocalProvider implements ProviderInterface
         $imageData = $image->toArray();
 
         $imgAttrs = ['src' => $image->getSrc()];
-        foreach (['alt', 'width', 'height', 'loading', 'decoding'] as $key) {
+        foreach (['alt', 'width', 'height', 'loading', 'decoding', 'srcset', 'sizes', 'fetchpriority'] as $key) {
             if (isset($imageData[$key]) && !isset($attributes[$key])) {
                 $imgAttrs[$key] = $imageData[$key];
             }

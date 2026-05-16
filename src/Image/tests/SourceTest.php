@@ -53,18 +53,42 @@ class SourceTest extends TestCase
         ], $source->toArray());
     }
 
+    public function testWithWidth(): void
+    {
+        $source = Source::create('/images/photo.webp')->width(800);
+
+        $this->assertSame([
+            'srcset' => '/images/photo.webp',
+            'width' => 800,
+        ], $source->toArray());
+    }
+
+    public function testWithHeight(): void
+    {
+        $source = Source::create('/images/photo.webp')->height(600);
+
+        $this->assertSame([
+            'srcset' => '/images/photo.webp',
+            'height' => 600,
+        ], $source->toArray());
+    }
+
     public function testWithAllAttributes(): void
     {
         $source = Source::create('/images/photo.webp')
             ->type('image/webp')
             ->media('(min-width: 800px)')
-            ->sizes('80vw');
+            ->sizes('80vw')
+            ->width(1200)
+            ->height(600);
 
         $this->assertSame([
             'srcset' => '/images/photo.webp',
             'type' => 'image/webp',
             'media' => '(min-width: 800px)',
             'sizes' => '80vw',
+            'width' => 1200,
+            'height' => 600,
         ], $source->toArray());
     }
 
@@ -124,6 +148,8 @@ class SourceTest extends TestCase
         $this->assertArrayNotHasKey('type', $arr);
         $this->assertArrayNotHasKey('media', $arr);
         $this->assertArrayNotHasKey('sizes', $arr);
+        $this->assertArrayNotHasKey('width', $arr);
+        $this->assertArrayNotHasKey('height', $arr);
     }
 
     public function testConstructorDirectly(): void

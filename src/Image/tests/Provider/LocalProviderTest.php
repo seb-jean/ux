@@ -152,4 +152,55 @@ class LocalProviderTest extends TestCase
 
         $this->assertStringContainsString('decoding="async"', $html);
     }
+
+    public function testRenderImageWithSrcset(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->srcset('/images/photo-300.jpg 300w, /images/photo-600.jpg 600w, /images/photo-1200.jpg 1200w');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('srcset="/images/photo-300.jpg 300w, /images/photo-600.jpg 600w, /images/photo-1200.jpg 1200w"', $html);
+    }
+
+    public function testRenderImageWithSrcsetAndSizes(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->srcset('/images/photo-300.jpg 300w, /images/photo-900.jpg 900w')
+            ->sizes('(max-width: 600px) 100vw, 50vw');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('srcset=', $html);
+        $this->assertStringContainsString('sizes="(max-width: 600px) 100vw, 50vw"', $html);
+    }
+
+    public function testRenderImageWithFetchpriority(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/hero.jpg'))->fetchpriority('high');
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+    }
+
+    public function testRenderImageWithSourceWidthAndHeight(): void
+    {
+        $provider = new LocalProvider();
+        $image = (new Image('/images/photo.jpg'))
+            ->addSource(
+                Source::create('/images/photo.avif')
+                    ->type('image/avif')
+                    ->width(1200)
+                    ->height(600)
+            );
+
+        $html = $provider->renderImage($image);
+
+        $this->assertStringContainsString('width="1200"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+    }
 }

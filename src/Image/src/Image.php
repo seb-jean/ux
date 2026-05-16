@@ -25,6 +25,9 @@ final class Image
         private ?int $height = null,
         private string $loading = 'lazy',
         private string $decoding = 'async',
+        private ?string $srcset = null,
+        private ?string $sizes = null,
+        private ?string $fetchpriority = null,
         private array $sources = [],
         private ?string $provider = null,
     ) {
@@ -80,6 +83,33 @@ final class Image
     {
         $clone = clone $this;
         $clone->decoding = $decoding;
+
+        return $clone;
+    }
+
+    public function srcset(string $srcset): self
+    {
+        $clone = clone $this;
+        $clone->srcset = $srcset;
+
+        return $clone;
+    }
+
+    public function sizes(string $sizes): self
+    {
+        $clone = clone $this;
+        $clone->sizes = $sizes;
+
+        return $clone;
+    }
+
+    /**
+     * @param 'high'|'low'|'auto' $fetchpriority
+     */
+    public function fetchpriority(string $fetchpriority): self
+    {
+        $clone = clone $this;
+        $clone->fetchpriority = $fetchpriority;
 
         return $clone;
     }
@@ -151,6 +181,16 @@ final class Image
         if (null !== $this->height) {
             $data['height'] = $this->height;
         }
+        if (null !== $this->srcset) {
+            $data['srcset'] = $this->srcset;
+        }
+        if (null !== $this->sizes) {
+            $data['sizes'] = $this->sizes;
+        }
+        if (null !== $this->fetchpriority) {
+            $data['fetchpriority'] = $this->fetchpriority;
+        }
+
         return $data;
     }
 }
