@@ -4991,7 +4991,6 @@
         "symfony/polyfill-intl-normalizer",
         "symfony/property-access",
         "symfony/property-info",
-        "symfony/routing",
         "symfony/string",
         "symfony/translation-contracts",
         "symfony/twig-bridge",

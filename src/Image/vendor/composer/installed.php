@@ -3,7 +3,7 @@
         'name' => 'symfony/ux-image',
         'pretty_version' => '3.x-dev',
         'version' => '3.9999999.9999999.9999999-dev',
-        'reference' => '640a5b758a37eb6ec728a8d778de0504de4e864f',
+        'reference' => '8da5321343438b6e654d8376b5215310869bb894',
         'type' => 'symfony-bundle',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -518,7 +518,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/routing',
             'aliases' => array(),
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'symfony/service-contracts' => array(
             'pretty_version' => 'dev-main',
@@ -587,7 +587,7 @@
         'symfony/ux-image' => array(
             'pretty_version' => '3.x-dev',
             'version' => '3.9999999.9999999.9999999-dev',
-            'reference' => '640a5b758a37eb6ec728a8d778de0504de4e864f',
+            'reference' => '8da5321343438b6e654d8376b5215310869bb894',
             'type' => 'symfony-bundle',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
