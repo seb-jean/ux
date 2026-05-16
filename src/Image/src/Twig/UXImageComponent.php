@@ -16,11 +16,11 @@ namespace Symfony\UX\Image\Twig;
  *
  * Supports three syntaxes:
  *
- *   {{ ux_image('/img/photo.jpg', { transform: { width: 800, format: 'webp' } }) }}
+ *   {{ ux_image('/img/photo.jpg') }}
  *
- *   {% component 'UX:Image' with { src: '/img/photo.jpg', transform: { width: 800, format: 'webp' } } %}
+ *   {% component 'UX:Image' with { src: '/img/photo.jpg' } %}
  *
- *   <twig:UX:Image src="/img/photo.jpg" :transform="{ width: 800, format: 'webp' }" />
+ *   <twig:UX:Image src="/img/photo.jpg" />
  *
  * For <picture> support with multiple sources:
  *
@@ -50,9 +50,6 @@ final class UXImageComponent
     public ?string $decoding = null;
 
     public ?string $provider = null;
-
-    /** @var array{width?: int, height?: int, format?: string, quality?: int, fit?: string}|null */
-    public ?array $transform = null;
 
     /** @var array<array{srcset: string, type?: string, media?: string, sizes?: string}>|null */
     public ?array $sources = null;

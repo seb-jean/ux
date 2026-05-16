@@ -50,19 +50,6 @@ class ImageRuntimeTest extends TestCase
         $this->assertStringContainsString('loading="eager"', $html);
     }
 
-    public function testRenderWithTransform(): void
-    {
-        $html = $this->runtime->renderImage('/images/photo.jpg', [
-            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85, 'fit' => 'cover'],
-        ]);
-
-        $this->assertStringContainsString('src="/_image?', $html);
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringContainsString('q=85', $html);
-        $this->assertStringContainsString('fit=cover', $html);
-    }
-
     public function testRenderWithExtraAttributes(): void
     {
         $html = $this->runtime->renderImage('/images/photo.jpg', [], ['class' => 'hero', 'id' => 'main-img']);
@@ -95,20 +82,6 @@ class ImageRuntimeTest extends TestCase
         $this->assertStringContainsString('width="800"', $html);
         $this->assertStringContainsString('height="600"', $html);
         $this->assertStringContainsString('loading="eager"', $html);
-    }
-
-    public function testComponentRenderWithTransform(): void
-    {
-        // {% component %} and <twig:UX:Image :transform="{ width: 800, format: 'webp' }" />
-        $html = $this->runtime->render([
-            'src' => '/images/photo.jpg',
-            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85],
-        ]);
-
-        $this->assertStringContainsString('src="/_image?', $html);
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringContainsString('q=85', $html);
     }
 
     public function testComponentRenderExtraArgsBecomHtmlAttributes(): void

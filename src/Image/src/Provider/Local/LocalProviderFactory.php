@@ -28,9 +28,7 @@ final class LocalProviderFactory extends AbstractProviderFactory implements Prov
             throw new UnsupportedSchemeException($dsn);
         }
 
-        $endpoint = $dsn->getOption('endpoint', '/_image');
-
-        return new LocalProvider($endpoint);
+        return new LocalProvider();
     }
 
     protected function getSupportedSchemes(): array

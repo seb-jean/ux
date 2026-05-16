@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Local\LocalProvider;
 use Symfony\UX\Image\Source;
-use Symfony\UX\Image\Transformation;
 
 class LocalProviderTest extends TestCase
 {
@@ -27,30 +26,6 @@ class LocalProviderTest extends TestCase
         $html = $provider->renderImage($image);
 
         $this->assertSame('<img src="/images/photo.jpg" alt="A photo" loading="lazy" decoding="async" />', $html);
-    }
-
-    public function testRenderImageWithTransformation(): void
-    {
-        $provider = new LocalProvider();
-        $image = (new Image('/images/photo.jpg'))
-            ->transform(
-                Transformation::create()
-                    ->width(800)
-                    ->height(600)
-                    ->format('webp')
-                    ->quality(85)
-                    ->fit('cover')
-            );
-
-        $html = $provider->renderImage($image);
-
-        $this->assertStringStartsWith('<img src="/_image?', $html);
-        $this->assertStringContainsString('src=%2Fimages%2Fphoto.jpg', $html);
-        $this->assertStringContainsString('w=800', $html);
-        $this->assertStringContainsString('h=600', $html);
-        $this->assertStringContainsString('format=webp', $html);
-        $this->assertStringContainsString('q=85', $html);
-        $this->assertStringContainsString('fit=cover', $html);
     }
 
     public function testRenderImageWithWidthAndHeight(): void
@@ -66,17 +41,6 @@ class LocalProviderTest extends TestCase
         $this->assertStringContainsString('width="800"', $html);
         $this->assertStringContainsString('height="600"', $html);
         $this->assertStringContainsString('alt="Photo"', $html);
-    }
-
-    public function testRenderImageWithCustomEndpoint(): void
-    {
-        $provider = new LocalProvider('/resize');
-        $image = (new Image('/images/photo.jpg'))
-            ->transform(Transformation::create()->width(400));
-
-        $html = $provider->renderImage($image);
-
-        $this->assertStringStartsWith('<img src="/resize?', $html);
     }
 
     public function testRenderImageWithExtraAttributes(): void

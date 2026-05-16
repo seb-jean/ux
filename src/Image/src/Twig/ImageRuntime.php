@@ -14,7 +14,6 @@ namespace Symfony\UX\Image\Twig;
 use Symfony\UX\Image\Image;
 use Symfony\UX\Image\Provider\Providers;
 use Symfony\UX\Image\Source;
-use Symfony\UX\Image\Transformation;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
@@ -35,7 +34,7 @@ final class ImageRuntime implements RuntimeExtensionInterface
      */
     public function render(array $args = []): string
     {
-        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'decoding', 'provider', 'transform', 'sources'];
+        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'decoding', 'provider', 'sources'];
 
         $options = array_intersect_key($args, array_flip($knownOptions));
         $attributes = array_diff_key($args, array_flip($knownOptions));
@@ -55,13 +54,6 @@ final class ImageRuntime implements RuntimeExtensionInterface
      *     loading?: string,
      *     decoding?: string,
      *     provider?: string,
-     *     transform?: array{
-     *         width?: int,
-     *         height?: int,
-     *         format?: string,
-     *         quality?: int,
-     *         fit?: string,
-     *     },
      *     sources?: array<array{srcset: string, type?: string, media?: string, sizes?: string}>,
      * }                                $options
      * @param array<string, string|bool> $attributes HTML attributes added to the <img> tag
@@ -88,9 +80,6 @@ final class ImageRuntime implements RuntimeExtensionInterface
         if (isset($options['provider'])) {
             $image = $image->provider($options['provider']);
         }
-        if (isset($options['transform']) && \is_array($options['transform'])) {
-            $image = $image->transform($this->buildTransformation($options['transform']));
-        }
         if (isset($options['sources']) && \is_array($options['sources'])) {
             foreach ($options['sources'] as $sourceData) {
                 $image = $image->addSource($this->buildSource($sourceData));
@@ -98,32 +87,6 @@ final class ImageRuntime implements RuntimeExtensionInterface
         }
 
         return $this->providers->renderImage($image, $attributes);
-    }
-
-    /**
-     * @param array{width?: int, height?: int, format?: string, quality?: int, fit?: string} $data
-     */
-    private function buildTransformation(array $data): Transformation
-    {
-        $t = Transformation::create();
-
-        if (isset($data['width'])) {
-            $t = $t->width($data['width']);
-        }
-        if (isset($data['height'])) {
-            $t = $t->height($data['height']);
-        }
-        if (isset($data['format'])) {
-            $t = $t->format($data['format']);
-        }
-        if (isset($data['quality'])) {
-            $t = $t->quality($data['quality']);
-        }
-        if (isset($data['fit'])) {
-            $t = $t->fit($data['fit']);
-        }
-
-        return $t;
     }
 
     /**

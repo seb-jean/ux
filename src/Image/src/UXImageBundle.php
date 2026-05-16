@@ -30,7 +30,7 @@ final class UXImageBundle extends AbstractBundle
             ->children()
                 ->scalarNode('provider')
                     ->defaultValue('local://default')
-                    ->info('The DSN of the image provider to use (e.g. "local://default" or "local://default?endpoint=/_image").')
+                    ->info('The DSN of the image provider to use (e.g. "local://default").')
                 ->end()
             ->end()
         ;

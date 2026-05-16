@@ -23,7 +23,6 @@ final class Image
         private ?string $alt = null,
         private ?int $width = null,
         private ?int $height = null,
-        private ?Transformation $transformation = null,
         private string $loading = 'lazy',
         private string $decoding = 'async',
         private array $sources = [],
@@ -59,14 +58,6 @@ final class Image
     {
         $clone = clone $this;
         $clone->height = $height;
-
-        return $clone;
-    }
-
-    public function transform(Transformation $transformation): self
-    {
-        $clone = clone $this;
-        $clone->transformation = $transformation;
 
         return $clone;
     }
@@ -130,11 +121,6 @@ final class Image
         return $this->provider;
     }
 
-    public function getTransformation(): ?Transformation
-    {
-        return $this->transformation;
-    }
-
     /**
      * @return Source[]
      */
@@ -165,10 +151,6 @@ final class Image
         if (null !== $this->height) {
             $data['height'] = $this->height;
         }
-        if (null !== $this->transformation && !$this->transformation->isEmpty()) {
-            $data['transformation'] = $this->transformation->toArray();
-        }
-
         return $data;
     }
 }
