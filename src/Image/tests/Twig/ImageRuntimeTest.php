@@ -125,6 +125,24 @@ class ImageRuntimeTest extends TestCase
         $this->runtime->render(['alt' => 'Photo']);
     }
 
+    // --- <twig:UX:Image :transform="{ ... }"> array syntax ---
+
+    public function testComponentRenderWithTransformArray(): void
+    {
+        // Simulates: <twig:UX:Image src="…" :transform="{ width: 800, format: 'webp' }" />
+        // The ":" prefix evaluates the value as a Twig expression, so TwigComponent
+        // passes transform as a native PHP array to render().
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'transform' => ['width' => 800, 'format' => 'webp', 'quality' => 85],
+        ]);
+
+        $this->assertStringContainsString('src="/_image?', $html);
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('format=webp', $html);
+        $this->assertStringContainsString('q=85', $html);
+    }
+
     // --- <twig:UX:Image> flat transform-* attributes ---
 
     public function testComponentRenderWithFlatTransformAttributes(): void

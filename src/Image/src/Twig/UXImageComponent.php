@@ -14,13 +14,26 @@ namespace Symfony\UX\Image\Twig;
 /**
  * Twig Component for rendering images.
  *
- * Supports two syntaxes:
+ * Three syntaxes are supported:
  *
- *   {% component 'UX:Image' with { src: '/img/photo.jpg', alt: 'Photo',
- *       transform: { width: 800, format: 'webp' } } %}
+ *   1. Twig function:
+ *      {{ ux_image('/img/photo.jpg', { transform: { width: 800, format: 'webp' } }) }}
  *
- *   <twig:UX:Image src="/img/photo.jpg" alt="Photo"
- *       transform-width="800" transform-format="webp" transform-quality="85" transform-fit="cover" />
+ *   2. {% component %} tag:
+ *      {% component 'UX:Image' with { src: '/img/photo.jpg',
+ *          transform: { width: 800, format: 'webp' } } %}
+ *
+ *   3. <twig:> HTML tag — two equivalent forms:
+ *
+ *      a) Array expression with the ":" prefix (evaluated as Twig expression):
+ *         <twig:UX:Image src="/img/photo.jpg" :transform="{ width: 800, format: 'webp' }" />
+ *
+ *      b) Flat scalar attributes (one per transformation option):
+ *         <twig:UX:Image src="/img/photo.jpg"
+ *             transform-width="800" transform-format="webp"
+ *             transform-quality="85" transform-fit="cover" />
+ *
+ * Any extra attribute is forwarded as an HTML attribute on the rendered <img>.
  *
  * @author Sébastien Jean <contact@seb-jean.fr>
  *
@@ -43,7 +56,7 @@ final class UXImageComponent
     /** @var array{width?: int, height?: int, format?: string, quality?: int, fit?: string}|null */
     public ?array $transform = null;
 
-    // Flat transform attributes for the <twig:UX:Image> HTML syntax
+    // Flat transform-* attributes for the <twig:UX:Image> HTML syntax (form b above)
     public ?int $transformWidth = null;
 
     public ?int $transformHeight = null;
