@@ -68,4 +68,60 @@ class ImageRuntimeTest extends TestCase
         $this->assertStringContainsString('class="hero"', $html);
         $this->assertStringContainsString('id="main-img"', $html);
     }
+
+    // --- Twig Component render() ---
+
+    public function testComponentRenderWithSrcOnly(): void
+    {
+        $html = $this->runtime->render(['src' => '/images/photo.jpg']);
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+    }
+
+    public function testComponentRenderWithOptions(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'alt' => 'A photo',
+            'width' => 800,
+            'height' => 600,
+            'loading' => 'eager',
+        ]);
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+        $this->assertStringContainsString('alt="A photo"', $html);
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+        $this->assertStringContainsString('loading="eager"', $html);
+    }
+
+    public function testComponentRenderWithTransform(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'transform' => ['width' => 800, 'format' => 'webp'],
+        ]);
+
+        $this->assertStringContainsString('src="/_image?', $html);
+        $this->assertStringContainsString('w=800', $html);
+        $this->assertStringContainsString('format=webp', $html);
+    }
+
+    public function testComponentRenderExtraArgsBecomHtmlAttributes(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'class' => 'hero',
+            'data-id' => '42',
+        ]);
+
+        $this->assertStringContainsString('class="hero"', $html);
+        $this->assertStringContainsString('data-id="42"', $html);
+    }
+
+    public function testComponentRenderRequiresSrc(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->runtime->render(['alt' => 'Photo']);
+    }
 }

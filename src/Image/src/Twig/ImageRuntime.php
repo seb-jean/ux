@@ -29,6 +29,22 @@ final class ImageRuntime implements RuntimeExtensionInterface
     }
 
     /**
+     * Called by the Twig Component renderer — receives all component props as $args,
+     * separates known image options from extra HTML attributes.
+     */
+    public function render(array $args = []): string
+    {
+        $knownOptions = ['src', 'alt', 'width', 'height', 'loading', 'provider', 'transform'];
+        $options = array_intersect_key($args, array_flip($knownOptions));
+        $attributes = array_diff_key($args, array_flip($knownOptions));
+
+        $src = $options['src'] ?? throw new \InvalidArgumentException('The "src" option is required when using the UX:Image component.');
+        unset($options['src']);
+
+        return $this->renderImage($src, $options, $attributes);
+    }
+
+    /**
      * @param string                     $src
      * @param array{
      *     alt?: string,

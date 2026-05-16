@@ -41,5 +41,6 @@ return static function (ContainerConfigurator $container): void {
                 service('ux_image.providers'),
             ])
             ->tag('twig.runtime')
+            ->tag('ux.twig_component.twig_renderer', ['key' => 'ux:image'])
     ;
 };

@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\UX\TwigComponent\TwigComponentBundle;
 
 /**
  * @author Sébastien Jean <contact@seb-jean.fr>
@@ -38,6 +39,10 @@ final class UXImageBundle extends AbstractBundle
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->import('../config/services.php');
+
+        if (ContainerBuilder::willBeAvailable('symfony/ux-twig-component', TwigComponentBundle::class, ['symfony/ux-image'])) {
+            $container->import('../config/twig_component.php');
+        }
 
         $container->services()
             ->get('ux_image.providers')
