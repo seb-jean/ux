@@ -1,9 +1,10 @@
 {# @block content The grouped items, typically multiple `Item` components #}
 <div
-    role="list"
-    data-slot="item-group"
     class="{{ ('group/item-group flex flex-col ' ~ attributes.render('class'))|tailwind_merge }}"
-    {{ attributes }}
+    {{ attributes.defaults({
+        'data-slot': 'item-group',
+        role: 'list',
+    }) }}
 >
     {%- block content %}{% endblock -%}
 </div>
