@@ -2,7 +2,7 @@
 <h2
     id="{{ _alert_dialog_title_id }}"
     class="{{ ('text-lg font-semibold ' ~ attributes.render('class'))|tailwind_merge }}"
-    {{ attributes.without('id') }}
+    {{ attributes.defaults({'data-slot': 'alert-dialog-title'}).without('id') }}
 >
     {%- block content %}{% endblock -%}
 </h2>
