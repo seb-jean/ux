@@ -8,9 +8,8 @@
 ) -%}
 
 <span
-    data-slot="avatar-badge"
     class="{{ classes|tailwind_merge }}"
-    {{ attributes }}
+    {{ attributes.defaults({'data-slot': 'avatar-badge'}) }}
 >
     {%- block content %}{% endblock -%}
 </span>
