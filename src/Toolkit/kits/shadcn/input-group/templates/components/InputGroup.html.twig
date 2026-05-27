@@ -1,6 +1,5 @@
 {# @block content The input group elements, typically includes input, `InputGroup:Addon`, and/or `InputGroup:Button` #}
 <div
-    data-slot="input-group"
     class="{{ [
         'group/input-group border-input dark:bg-input/30 relative flex w-full items-center rounded-md border shadow-xs transition-[color,box-shadow] outline-none',
         'h-9 min-w-0 has-[>textarea]:h-auto',
@@ -15,7 +14,7 @@
         'has-[[data-slot][aria-invalid=true]]:ring-destructive/20 has-[[data-slot][aria-invalid=true]]:border-destructive dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40',
         attributes.render('class'),
     ]|join(' ')|tailwind_merge }}"
-    {{ attributes }}
+    {{ attributes.defaults({'data-slot': 'input-group'}) }}
 >
     {%- block content %}{% endblock -%}
 </div>
