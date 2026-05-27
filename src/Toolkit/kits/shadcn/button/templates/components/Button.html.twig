@@ -27,9 +27,8 @@
     },
 ) -%}
 <{{ as }}
-    data-slot="button"
     class="{{ style.apply({variant: variant, size: size}, attributes.render('class'))|tailwind_merge }}"
-    {{ attributes }}
+    {{ attributes.defaults({'data-slot': 'button'}) }}
 >
     {%- block content %}{% endblock -%}
 </{{ as }}>
