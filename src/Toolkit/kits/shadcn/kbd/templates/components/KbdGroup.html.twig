@@ -1,4 +1,7 @@
 {# @block content The keyboard shortcut combination, typically multiple `Kbd` components #}
-<kbd class="inline-flex items-center gap-1">
+<kbd
+    class="{{ ('inline-flex items-center gap-1 ' ~ attributes.render('class'))|tailwind_merge }}"
+    {{ attributes.defaults({'data-slot': 'kbd-group'}) }}
+>
     {%- block content %}{% endblock -%}
 </kbd>
