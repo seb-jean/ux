@@ -1,8 +1,7 @@
 <twig:Pagination:Link
-    aria-label="Go to previous page"
     size="default"
     class="{{ ('gap-1 pl-2.5 ' ~ attributes.render('class'))|tailwind_merge }}"
-    {{ ...attributes.defaults({'data-slot': 'pagination-previous'}) }}
+    {{ ...attributes.defaults({'data-slot': 'pagination-previous', 'aria-label': 'Go to previous page'}) }}
 >
     <twig:ux:icon name="lucide:chevron-left" class="size-4" />
     <span>Previous</span>

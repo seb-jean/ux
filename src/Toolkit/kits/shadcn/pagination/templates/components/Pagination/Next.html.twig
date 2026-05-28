@@ -1,8 +1,7 @@
 <twig:Pagination:Link
-    aria-label="Go to next page"
     size="default"
     class="{{ ('gap-1 pr-2.5 ' ~ attributes.render('class'))|tailwind_merge }}"
-    {{ ...attributes.defaults({'data-slot': 'pagination-next'}) }}
+    {{ ...attributes.defaults({'data-slot': 'pagination-next', 'aria-label': 'Go to next page'}) }}
 >
     <span>Next</span>
     <twig:ux:icon name="lucide:chevron-right" class="size-4" />
