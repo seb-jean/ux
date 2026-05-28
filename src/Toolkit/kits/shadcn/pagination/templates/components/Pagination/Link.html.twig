@@ -7,7 +7,7 @@
     size="icon"
     aria-current="{{ active ? 'page' : false }}"
     href="#"
-    {{ ...attributes.without('class') }}
+    {{ ...attributes.without('class').defaults({'data-slot': 'pagination-link'}) }}
 >
     {{- block(outerBlocks.content) -}}
 </twig:Button>
