@@ -1,10 +1,10 @@
 {# @prop pressed boolean Whether the item is initially pressed. Defaults to `false` #}
 {# @block content The toggle item label and/or icon #}
 {%- props pressed = false -%}
-{%- set _toggleGroup_variant = inject('toggleGroup.variant', 'default') -%}
-{%- set _toggleGroup_size = inject('toggleGroup.size', 'default') -%}
-{%- set _toggleGroup_spacing = inject('toggleGroup.spacing', 2) -%}
-{%- set _toggleGroup_disabled = inject('toggleGroup.disabled', false) -%}
+{%- set _toggle_group_variant = inject('toggle_group.variant', 'default') -%}
+{%- set _toggle_group_size = inject('toggle_group.size', 'default') -%}
+{%- set _toggle_group_spacing = inject('toggle_group.spacing', 2) -%}
+{%- set _toggle_group_disabled = inject('toggle_group.disabled', false) -%}
 {%- set style = html_cva(
     base: "shrink-0 group-data-[spacing=0]/toggle-group:rounded-none group-data-[spacing=0]/toggle-group:px-2 focus:z-10 focus-visible:z-10 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-1.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-1.5 group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-lg group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-lg group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-lg group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-lg group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0 group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t group/toggle inline-flex items-center justify-center gap-1 rounded-lg text-sm font-medium whitespace-nowrap transition-all outline-none hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-muted data-[state=on]:bg-muted dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
     variants: {
@@ -21,18 +21,18 @@
 ) -%}
 <button
     type="button"
-    class="{{ style.apply({variant: _toggleGroup_variant, size: _toggleGroup_size}, attributes.render('class'))|tailwind_merge }}"
+    class="{{ style.apply({variant: _toggle_group_variant, size: _toggle_group_size}, attributes.render('class'))|tailwind_merge }}"
     {{ attributes.defaults({
         'data-slot': 'toggle-group-item',
         'data-controller': 'toggle',
         'data-action': 'click->toggle#toggle click->toggle-group#toggle',
         'data-toggle-pressed-value': pressed ? 'true' : 'false',
-        'data-variant': _toggleGroup_variant,
-        'data-size': _toggleGroup_size,
-        'data-spacing': _toggleGroup_spacing,
+        'data-variant': _toggle_group_variant,
+        'data-size': _toggle_group_size,
+        'data-spacing': _toggle_group_spacing,
         'aria-pressed': pressed ? 'true' : 'false',
         'data-state': pressed ? 'on' : 'off',
-        disabled: _toggleGroup_disabled,
+        disabled: _toggle_group_disabled,
     }) }}
 >
     {%- block content %}{% endblock -%}

@@ -6,11 +6,11 @@
 {# @prop disabled boolean Whether all items in the group are disabled. Defaults to `false` #}
 {# @block content The toggle items, typically multiple `ToggleGroup:Item` components #}
 {%- props variant = 'default', size = 'default', type = 'multiple', spacing = 2, orientation = 'horizontal', disabled = false -%}
-{%- do provide('toggleGroup.variant', variant) -%}
-{%- do provide('toggleGroup.size', size) -%}
-{%- do provide('toggleGroup.spacing', spacing) -%}
-{%- do provide('toggleGroup.orientation', orientation) -%}
-{%- do provide('toggleGroup.disabled', disabled) -%}
+{%- do provide('toggle_group.variant', variant) -%}
+{%- do provide('toggle_group.size', size) -%}
+{%- do provide('toggle_group.spacing', spacing) -%}
+{%- do provide('toggle_group.orientation', orientation) -%}
+{%- do provide('toggle_group.disabled', disabled) -%}
 <div
     role="group"
     style="--gap: {{ spacing }}"
