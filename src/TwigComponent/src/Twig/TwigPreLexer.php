@@ -130,7 +130,40 @@ class TwigPreLexer
                     $this->currentComponents[\count($this->currentComponents) - 1]['hasDefaultBlock'] = true;
                 }
 
-                $attributes = $this->consumeAttributes($componentName);
+                if ('component' === $componentName) {
+                    // <twig:component :is="expr"> or <twig:component is="name"> — dynamic component meta-tag.
+                    // Pass an empty array (not null) to signal that the "is" attribute should be extracted.
+                    $isAttr = [];
+                    $attributes = $this->consumeAttributes($componentName, $isAttr);
+
+                    if ([] !== $isAttr) {
+                        // An "is"/":is" attribute was found: use it as the component name.
+                        $isSelfClosing = $this->consume('/>');
+                        if (!$isSelfClosing) {
+                            $this->consume('>');
+                            $this->currentComponents[] = ['name' => 'component', 'hasDefaultBlock' => false];
+                        }
+
+                        if ($isSelfClosing) {
+                            // Use the simpler component() function format (no embedded blocks needed).
+                            $output .= "{{ component({$isAttr['value']}".($attributes ? ", { {$attributes} }" : '').') }}';
+                        } else {
+                            if ($isAttr['isDynamic']) {
+                                // Wrap in parentheses to signal a dynamic name to ComponentTokenParser.
+                                $output .= "{% component ({$isAttr['value']})".($attributes ? " with { {$attributes} }" : '').' %}';
+                            } else {
+                                $output .= "{% component {$isAttr['value']}".($attributes ? " with { {$attributes} }" : '').' %}';
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    // No "is"/":is" attribute: fall through to normal handling (renders a component named "component").
+                } else {
+                    $attributes = $this->consumeAttributes($componentName);
+                }
+
                 $isSelfClosing = $this->consume('/>');
                 if (!$isSelfClosing) {
                     $this->consume('>');
@@ -211,7 +244,13 @@ class TwigPreLexer
         throw new SyntaxError($customExceptionMessage ?? 'Expected component name when resolving the "<twig:" syntax.', $this->line);
     }
 
-    private function consumeAttributes(string $componentName): string
+    /**
+     * @param array{value: string, isDynamic: bool}|null $extractedIsAttr When set, the "is"/":is" attribute is
+     *                                                                      extracted into this variable instead of
+     *                                                                      being included in the returned string.
+     *                                                                      Used by the <twig:component> dynamic tag.
+     */
+    private function consumeAttributes(string $componentName, ?array &$extractedIsAttr = null): string
     {
         $attributes = [];
 
@@ -224,7 +263,7 @@ class TwigPreLexer
             if ($this->check('{{...') || $this->check('{{ ...')) {
                 $this->consume('{{...');
                 $this->consume('{{ ...');
-                $attributes[] = '...'.trim($this->consumeUntil('}}'));
+                $attributes[] = '...' . trim($this->consumeUntil('}}'));
                 $this->consume('}}');
 
                 continue;
@@ -266,10 +305,16 @@ class TwigPreLexer
                 $attributeValue = $this->consumeAttributeValue($quote);
             }
 
-            $attributes[] = \sprintf('%s: %s', preg_match('/[-:@]/', $key) ? "'$key'" : $key, '' === $attributeValue ? "''" : $attributeValue);
-
             $this->expectAndConsumeChar($quote);
             $this->consumeWhitespace();
+
+            // When extracting the "is" attribute for <twig:component>, capture it separately.
+            if (null !== $extractedIsAttr && 'is' === $key) {
+                $extractedIsAttr = ['value' => ('' === $attributeValue ? "''" : $attributeValue), 'isDynamic' => $isAttributeDynamic];
+                continue;
+            }
+
+            $attributes[] = \sprintf('%s: %s', preg_match('/[-:@]/', $key) ? "'$key'" : $key, '' === $attributeValue ? "''" : $attributeValue);
         }
 
         return implode(', ', $attributes);
@@ -299,7 +344,7 @@ class TwigPreLexer
         $char = $this->input[$this->position];
 
         if (null !== $validChars && !\in_array($char, (array) $validChars, true)) {
-            throw new SyntaxError('Expected one of [.'.implode('', (array) $validChars)."] but found '{$char}'.", $this->line);
+            throw new SyntaxError('Expected one of [.' . implode('', (array) $validChars) . "] but found '{$char}'.", $this->line);
         }
 
         ++$this->position;

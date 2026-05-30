@@ -70,6 +70,23 @@ final class ComponentParserTest extends KernelTestCase
         $environment->createTemplate($source, 'foo.html.twig');
     }
 
+    #[DataProvider('provideDynamicComponentNames')]
+    public function testAcceptTwigComponentTagWithDynamicName(string $source)
+    {
+        $environment = $this->createEnvironment();
+        $template = $environment->createTemplate($source);
+
+        $this->assertInstanceOf(TemplateWrapper::class, $template);
+    }
+
+    public static function provideDynamicComponentNames(): iterable
+    {
+        yield 'variable in parentheses' => ['{% component (myVar) %}{% endcomponent %}'];
+        yield 'string literal in parentheses' => ["{% component ('Button') %}{% endcomponent %}"];
+        yield 'concatenation in parentheses' => ["{% component ('Basic' ~ 'Component') %}{% endcomponent %}"];
+        yield 'array access in parentheses' => ['{% component (components[key]) %}{% endcomponent %}'];
+    }
+
     public static function provideValidComponentNames(): iterable
     {
         // Those names are all syntactically valid even if

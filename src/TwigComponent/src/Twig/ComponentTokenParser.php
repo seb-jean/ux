@@ -35,16 +35,18 @@ final class ComponentTokenParser extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
 
+        // A parenthesized expression signals a dynamic component name (e.g. {% component (myVar) %}).
+        // Without parentheses, bare names and string literals are treated as static names (backward compat).
+        $isDynamic = '(' === $stream->getCurrent()->getValue();
+
         if (method_exists($this->parser, 'parseExpression')) {
             // Since Twig 3.21
-            $componentName = $this->componentName($this->parser->parseExpression());
+            $expression = $this->parser->parseExpression();
         } else {
-            $componentName = $this->componentName($this->parser->getExpressionParser()->parseExpression());
+            $expression = $this->parser->getExpressionParser()->parseExpression();
         }
 
-        if (null === $componentName) {
-            throw new SyntaxError('Could not parse component name.', $stream->getCurrent()->getLine(), $stream->getSourceContext());
-        }
+        $componentNameExpression = $this->resolveComponentName($expression, $isDynamic, $stream);
 
         [$propsExpression, $only] = $this->parseArguments();
 
@@ -78,7 +80,7 @@ final class ComponentTokenParser extends AbstractTokenParser
 
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        return new ComponentNode($componentName, $module->getTemplateName(), $module->getAttribute('index'), $propsExpression, $only, $token->getLine());
+        return new ComponentNode($componentNameExpression, $module->getTemplateName(), $module->getAttribute('index'), $propsExpression, $only, $token->getLine());
     }
 
     public function getTag(): string
@@ -86,17 +88,24 @@ final class ComponentTokenParser extends AbstractTokenParser
         return 'component';
     }
 
-    private function componentName(AbstractExpression $expression): ?string
+    private function resolveComponentName(AbstractExpression $expression, bool $isDynamic, \Twig\TokenStream $stream): AbstractExpression
     {
-        if ($expression instanceof ConstantExpression) { // using {% component 'name' %}
-            return $expression->getAttribute('value');
+        if ($isDynamic) {
+            // Parenthesized expression: treat as a dynamic runtime expression
+            return $expression;
         }
 
-        if ($expression instanceof NameExpression) { // using {% component name %}
-            return $expression->getAttribute('name');
+        if ($expression instanceof ConstantExpression) {
+            // Quoted string literal: {% component 'Button' %}
+            return $expression;
         }
 
-        return null;
+        if ($expression instanceof NameExpression) {
+            // Bare identifier without parentheses: {% component Button %} — kept as a static name for backward compatibility
+            return new ConstantExpression($expression->getAttribute('name'), $expression->getTemplateLine());
+        }
+
+        throw new SyntaxError('Could not parse component name.', $stream->getCurrent()->getLine(), $stream->getSourceContext());
     }
 
     /**

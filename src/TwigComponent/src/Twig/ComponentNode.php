@@ -29,9 +29,9 @@ use Twig\Template;
 #[YieldReady]
 final class ComponentNode extends Node implements NodeOutputInterface
 {
-    public function __construct(string $component, string $embeddedTemplateName, int $embeddedTemplateIndex, ?AbstractExpression $props, bool $only, int $lineno)
+    public function __construct(AbstractExpression $componentName, string $embeddedTemplateName, int $embeddedTemplateIndex, ?AbstractExpression $props, bool $only, int $lineno)
     {
-        $nodes = [];
+        $nodes = ['component' => $componentName];
         if (null !== $props) {
             $nodes['props'] = $props;
         }
@@ -41,7 +41,6 @@ final class ComponentNode extends Node implements NodeOutputInterface
         $this->setAttribute('only', $only);
         $this->setAttribute('embedded_template', $embeddedTemplateName);
         $this->setAttribute('embedded_index', $embeddedTemplateIndex);
-        $this->setAttribute('component', $component);
     }
 
     public function compile(Compiler $compiler): void
@@ -56,6 +55,13 @@ final class ComponentNode extends Node implements NodeOutputInterface
                ->string(ComponentRuntime::class)
                ->raw(");\n");
 
+        // Evaluate the component name expression once into a temporary variable so it is not evaluated twice.
+        $componentNameVar = $compiler->getVarName();
+        $compiler
+            ->write(\sprintf('$%s = ', $componentNameVar))
+            ->subcompile($this->getNode('component'))
+            ->raw(";\n");
+
         /*
          * Block 1) PreCreateForRender handling
          *
@@ -64,7 +70,7 @@ final class ComponentNode extends Node implements NodeOutputInterface
          */
         $compiler
             ->write(\sprintf('$preRendered = $%s->preRender(', $componentRuntime))
-            ->string($this->getAttribute('component'))
+            ->raw('$' . $componentNameVar)
             ->raw(', ')
             ->raw('Twig\Extension\CoreExtension::toArray')
             ->raw('(');
@@ -96,7 +102,7 @@ final class ComponentNode extends Node implements NodeOutputInterface
          */
         $compiler
             ->write(\sprintf('$preRenderEvent = $%s->startEmbedComponent(', $componentRuntime))
-            ->string($this->getAttribute('component'))
+            ->raw('$' . $componentNameVar)
             ->raw(', ')
             ->raw('Twig\Extension\CoreExtension::toArray')
             ->raw('(');

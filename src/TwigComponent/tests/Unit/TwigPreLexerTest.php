@@ -433,5 +433,73 @@ final class TwigPreLexerTest extends TestCase
                     }) }) }}
                 TWIG,
         ];
+
+        // <twig:component> without "is"/":is" renders a literal component named "component" (backward compat)
+        yield 'component_named_component_no_is_self_closing' => [
+            '<twig:component />',
+            "{{ component('component') }}",
+        ];
+
+        yield 'component_named_component_no_is_with_block' => [
+            '<twig:component>Content</twig:component>',
+            "{% component 'component' %}{% block content %}Content{% endblock %}{% endcomponent %}",
+        ];
+
+        yield 'component_named_component_no_is_with_prop' => [
+            '<twig:component foo="bar" />',
+            "{{ component('component', { foo: 'bar' }) }}",
+        ];
+
+        // <twig:component is="..."> and <twig:component :is="..."> dynamic component meta-tag
+
+        yield 'dynamic_component_static_name_self_closing' => [
+            '<twig:component is="Button" />',
+            "{{ component('Button') }}",
+        ];
+
+        yield 'dynamic_component_static_name_with_props_self_closing' => [
+            '<twig:component is="Alert" color="red" />',
+            "{{ component('Alert', { color: 'red' }) }}",
+        ];
+
+        yield 'dynamic_component_variable_self_closing' => [
+            '<twig:component :is="componentName" />',
+            '{{ component(componentName) }}',
+        ];
+
+        yield 'dynamic_component_variable_with_props_self_closing' => [
+            '<twig:component :is="componentName" color="red" />',
+            "{{ component(componentName, { color: 'red' }) }}",
+        ];
+
+        yield 'dynamic_component_static_name_with_block' => [
+            '<twig:component is="Alert">Content</twig:component>',
+            "{% component 'Alert' %}{% block content %}Content{% endblock %}{% endcomponent %}",
+        ];
+
+        yield 'dynamic_component_static_name_with_props_and_block' => [
+            '<twig:component is="Alert" color="red">Content</twig:component>',
+            "{% component 'Alert' with { color: 'red' } %}{% block content %}Content{% endblock %}{% endcomponent %}",
+        ];
+
+        yield 'dynamic_component_variable_with_block' => [
+            '<twig:component :is="componentName">Content</twig:component>',
+            '{% component (componentName) %}{% block content %}Content{% endblock %}{% endcomponent %}',
+        ];
+
+        yield 'dynamic_component_variable_with_props_and_block' => [
+            '<twig:component :is="componentName" color="red">Content</twig:component>',
+            "{% component (componentName) with { color: 'red' } %}{% block content %}Content{% endblock %}{% endcomponent %}",
+        ];
+
+        yield 'dynamic_component_expression_self_closing' => [
+            "<twig:component :is=\"type ~ 'Component'\" />",
+            "{{ component(type ~ 'Component') }}",
+        ];
+
+        yield 'dynamic_component_expression_with_block' => [
+            "<twig:component :is=\"type ~ 'Component'\">Content</twig:component>",
+            "{% component (type ~ 'Component') %}{% block content %}Content{% endblock %}{% endcomponent %}",
+        ];
     }
 }
