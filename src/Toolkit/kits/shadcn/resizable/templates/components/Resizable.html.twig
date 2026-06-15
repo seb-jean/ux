@@ -3,12 +3,12 @@
 {%- props orientation = 'horizontal' -%}
 <div
     class="{{ ('group/resizable flex h-full w-full aria-[orientation=vertical]:flex-col ' ~ attributes.render('class'))|tailwind_merge }}"
+    data-slot="resizable-panel-group"
+    data-resizable-orientation-value="{{ orientation }}"
+    data-orientation="{{ orientation }}"
+    aria-orientation="{{ orientation }}"
     {{ attributes.defaults({
-        'data-slot': 'resizable-panel-group',
         'data-controller': 'resizable',
-        'data-resizable-orientation-value': orientation,
-        'data-orientation': orientation,
-        'aria-orientation': orientation,
     }) }}
 >
     {%- block content %}{% endblock -%}
