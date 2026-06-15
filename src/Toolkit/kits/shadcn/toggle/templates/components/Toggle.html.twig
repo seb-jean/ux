@@ -24,12 +24,12 @@
 <button
     type="button"
     class="{{ style.apply({variant: variant, size: size}, attributes.render('class'))|tailwind_merge }}"
+    data-slot="toggle"
+    aria-pressed="{{ pressed ? 'true' : 'false' }}"
+    data-state="{{ pressed ? 'on' : 'off' }}"
     {{ attributes.defaults({
-        'data-slot': 'toggle',
         'data-controller': 'toggle',
         'data-action': 'click->toggle#toggle',
-        'aria-pressed': pressed ? 'true' : 'false',
-        'data-state': pressed ? 'on' : 'off',
     }) }}
 >
     {%- block content %}{% endblock -%}
