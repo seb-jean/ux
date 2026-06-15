@@ -19,14 +19,13 @@
 {%- do provide('accordionItem.orientation', _accordion_orientation) -%}
 <div
     class="{{ ('not-last:border-b group ' ~ attributes.render('class'))|tailwind_merge }}"
-    {{ attributes.defaults({
-        'data-slot': 'accordion-item',
-        'data-accordion-target': 'item',
-        'data-value': value,
-        'data-open': _accordion_item_is_open ? 'true' : false,
-        'data-closed': not _accordion_item_is_open ? 'true' : false,
-        'aria-disabled': _accordion_item_disabled ? 'true' : false,
-    }) }}
+    data-slot="accordion-item"
+    data-accordion-target="item"
+    data-value="{{ value }}"
+    {% if _accordion_item_is_open %}data-open="true"{% endif %}
+    {% if not _accordion_item_is_open %}data-closed="true"{% endif %}
+    {% if _accordion_item_disabled %}aria-disabled="true"{% endif %}
+    {{ attributes }}
 >
     {%- block content %}{% endblock -%}
 </div>
