@@ -13,6 +13,13 @@ namespace Symfony\UX\Turbo\Tests\Bridge\Mercure;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Mercure\EventSubscriber\SetCookieSubscriber;
 use Symfony\UX\Turbo\Tests\Fixtures\Book;
 
 final class MercureStreamSourceRendererTest extends KernelTestCase
@@ -27,6 +34,78 @@ final class MercureStreamSourceRendererTest extends KernelTestCase
         self::assertInstanceOf(\Twig\Environment::class, $twig);
 
         $this->assertSame($expectedResult, $twig->createTemplate($template)->render($context));
+    }
+
+    public function testMultiplePrivateSourcesIssueASingleMergedCookie(): void
+    {
+        $container = self::getContainer();
+        $twig = $container->get('twig');
+
+        // Two private stream sources rendered during the same request: this used to throw
+        // because the Mercure Authorization refuses to set its cookie twice for one hub.
+        $twig->createTemplate("{{ turbo_stream_from('topic_a', private=true) }}")->render();
+        $twig->createTemplate("{{ turbo_stream_from(['topic_b', 'topic_a'], private=true) }}")->render();
+
+        $response = $this->emitResponse($container);
+
+        $cookies = $response->headers->getCookies();
+        self::assertCount(1, $cookies, 'A single Mercure authorization cookie is issued.');
+        self::assertSame('mercureAuthorization', $cookies[0]->getName());
+
+        $subscribed = $this->decodeSubscribeClaim($cookies[0]->getValue());
+        sort($subscribed);
+        self::assertSame(['topic_a', 'topic_b'], $subscribed, 'The cookie authorizes every private topic of the request.');
+    }
+
+    public function testPublicSourceDoesNotIssueACookie(): void
+    {
+        $container = self::getContainer();
+        $container->get('twig')->createTemplate("{{ turbo_stream_from('a_topic') }}")->render();
+
+        self::assertCount(0, $this->emitResponse($container)->headers->getCookies());
+    }
+
+    public function testAnAlreadyIssuedCookieIsLeftUntouched(): void
+    {
+        $container = self::getContainer();
+        $container->get('twig')->createTemplate("{{ turbo_stream_from('topic_a', private=true) }}")->render();
+
+        // Simulate an application that manages its own authorization cookie for the hub: it is
+        // scoped to the hub URL exactly as the Mercure Authorization would scope it.
+        $request = Request::create('http://127.0.0.1/');
+        $request->attributes->set('_mercure_authorization_cookies', [
+            'default' => Cookie::create('mercureAuthorization', 'application-managed-token', 0, '/.well-known/mercure'),
+        ]);
+
+        $cookies = $this->emitResponse($container, $request)->headers->getCookies();
+
+        self::assertCount(1, $cookies, 'The renderer does not add a second cookie.');
+        self::assertSame('application-managed-token', $cookies[0]->getValue(), 'The existing cookie is left untouched.');
+    }
+
+    private function emitResponse(ContainerInterface $container, ?Request $request = null): Response
+    {
+        $response = new Response();
+        $event = new ResponseEvent(self::$kernel, $request ?? Request::create('http://127.0.0.1/'), HttpKernelInterface::MAIN_REQUEST, $response);
+
+        // Reproduce the response pipeline in priority order: Mercure's SetCookieSubscriber
+        // (priority 0) transfers any cookie already set to the response first, then our late
+        // subscriber (priority -200) issues the cookie for the collected private topics.
+        (new SetCookieSubscriber())->onKernelResponse($event);
+        $container->get('turbo.mercure.authorization_subscriber')->onKernelResponse($event);
+
+        return $response;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function decodeSubscribeClaim(string $jwt): array
+    {
+        [, $payload] = explode('.', $jwt);
+        $claims = json_decode(base64_decode(strtr($payload, '-_', '+/')), true, 512, \JSON_THROW_ON_ERROR);
+
+        return $claims['mercure']['subscribe'] ?? [];
     }
 
     /**

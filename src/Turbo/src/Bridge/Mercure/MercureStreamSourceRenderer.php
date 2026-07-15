@@ -20,8 +20,10 @@ use Twig\Extension\AbstractExtension;
 /**
  * Renders a Mercure stream source element, delegating authorization to the Mercure Bundle.
  *
- * For private topics, sets the Mercure authorization cookie as a side effect so the
- * browser EventSource can authenticate with `withCredentials: true`.
+ * For private topics, the browser EventSource authenticates with `withCredentials: true`
+ * using the Mercure authorization cookie. The cookie is not issued here: private topics are
+ * collected by {@see MercureAuthorizationSubscriber}, which sets a single cookie per hub once
+ * the response is ready, so that several private stream sources can coexist on the same page.
  *
  * @author Sébastien Jean <sebastien.jean76@gmail.com>
  */
@@ -31,6 +33,7 @@ final class MercureStreamSourceRenderer implements StreamSourceRendererInterface
         private readonly IdAccessor $idAccessor,
         private readonly Environment $twig,
         private readonly string $hubName,
+        private readonly MercureAuthorizationSubscriber $authorizationSubscriber,
     ) {
     }
 
@@ -43,19 +46,19 @@ final class MercureStreamSourceRenderer implements StreamSourceRendererInterface
             \is_array($topics) ? $topics : [$topics],
         );
 
-        $mercureOptions = ['hub' => $this->hubName];
-        if ($private) {
-            $mercureOptions['withCredentials'] = true;
-            $mercureOptions['subscribe'] = $topicStrings;
-        }
-
         // Mercure >= 0.7: https://github.com/symfony/mercure/pull/123
         /* @phpstan-ignore-next-line function.alreadyNarrowedType */
         $mercure = is_subclass_of(MercureExtension::class, AbstractExtension::class)
             ? $this->twig->getExtension(MercureExtension::class) /* @phpstan-ignore argument.templateType */
             : $this->twig->getRuntime(MercureExtension::class);
 
-        $url = $mercure->mercure($topicStrings, $mercureOptions);
+        $url = $mercure->mercure($topicStrings, ['hub' => $this->hubName]);
+
+        if ($private) {
+            // Defer issuing the authorization cookie so multiple private sources rendered
+            // during the same request share a single cookie authorizing all their topics.
+            $this->authorizationSubscriber->subscribe($this->hubName, $topicStrings);
+        }
 
         return \sprintf(
             '<turbo-mercure-stream-source src="%s"%s></turbo-mercure-stream-source>',

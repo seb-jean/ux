@@ -74,7 +74,12 @@ final class FrameworkAppKernel extends Kernel
             'hubs' => [
                 'default' => [
                     'url' => 'http://127.0.0.1:3000/.well-known/mercure',
-                    'jwt' => 'eyJhbGciOiJIUzI1NiJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.vhMwOaN5K68BTIhWokMLOeOJO4EPfT64brd8euJOA4M',
+                    // Use a secret so the hub exposes a JWT factory, allowing the Mercure
+                    // Authorization service to mint authorization cookies for private topics.
+                    'jwt' => [
+                        'secret' => '!ChangeThisMercureHubJWTSecretKey!',
+                        'publish' => ['*'],
+                    ],
                 ],
             ],
         ]);

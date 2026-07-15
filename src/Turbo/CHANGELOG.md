@@ -3,6 +3,9 @@
 ## 3.2.0
 
 - Prevent installation alongside `symfony/mercure` 0.7.0 and 0.7.1, which are incompatible
+- Fix issuing a single Mercure authorization cookie per hub when several private
+  `<turbo-mercure-stream-source>` are rendered in the same request, and leave a cookie
+  already set by the application untouched
 
 ## 3.1.0
 

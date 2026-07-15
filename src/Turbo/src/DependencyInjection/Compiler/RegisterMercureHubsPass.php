@@ -14,7 +14,9 @@ namespace Symfony\UX\Turbo\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Mercure\Authorization;
 use Symfony\UX\Turbo\Bridge\Mercure\Broadcaster;
+use Symfony\UX\Turbo\Bridge\Mercure\MercureAuthorizationSubscriber;
 use Symfony\UX\Turbo\Bridge\Mercure\MercureStreamSourceRenderer;
 use Symfony\UX\Turbo\Bridge\Mercure\TurboStreamListenRenderer;
 
@@ -28,6 +30,12 @@ final class RegisterMercureHubsPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
+        if ($container->has(Authorization::class)) {
+            $container->register('turbo.mercure.authorization_subscriber', MercureAuthorizationSubscriber::class)
+                ->addArgument(new Reference(Authorization::class))
+                ->addTag('kernel.event_subscriber');
+        }
+
         foreach ($container->findTaggedServiceIds('mercure.hub') as $hubId => $tags) {
             $name = str_replace('mercure.hub.', '', $hubId);
 
@@ -42,6 +50,7 @@ final class RegisterMercureHubsPass implements CompilerPassInterface
                 ->addArgument(new Reference('turbo.id_accessor'))
                 ->addArgument(new Reference('twig'))
                 ->addArgument($name)
+                ->addArgument(new Reference('turbo.mercure.authorization_subscriber'))
                 ->addTag('turbo.stream_source_renderer', ['transport' => $name]);
 
             foreach ($tags as $tag) {
