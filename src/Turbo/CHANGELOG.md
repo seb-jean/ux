@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Share a single `EventSource` between `<turbo-mercure-stream-source>` elements subscribing to the same Mercure hub, instead of opening one connection per element
+
 ## 3.2.0
 
 - Prevent installation alongside `symfony/mercure` 0.7.0 and 0.7.1, which are incompatible
