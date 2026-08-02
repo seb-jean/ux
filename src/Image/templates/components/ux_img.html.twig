@@ -1,12 +1,14 @@
 {%- set image = this.rendered -%}
+{# A standalone <img> opens its own <picture> to carry the format sources; nested in a
+   <twig:ux:picture> it must not, but its sources are still emitted, right before the
+   <img> and after the explicit <twig:ux:source> siblings, where they are the fallback
+   for when no media condition matched. #}
 {%- set wrap = image.sources is not empty and not inject('ux_image.picture', false) -%}
 {%- set attrs = attributes|trim -%}
-{%- if wrap -%}
-    <picture>
-    {%- for source in image.sources -%}
-        <source type="{{ source.type }}" srcset="{{ source.srcset }}"{% if source.sizes %} sizes="{{ source.sizes }}"{% endif %}>
-    {%- endfor -%}
-{%- endif -%}
+{%- if wrap %}<picture>{% endif -%}
+{%- for source in image.sources -%}
+    <source type="{{ source.type }}" srcset="{{ source.srcset }}"{% if source.sizes %} sizes="{{ source.sizes }}"{% endif %}>
+{%- endfor -%}
 <img
     {{- ' ' }}src="{{ image.src }}"
     {{- ' ' }}alt="{{ image.alt }}"

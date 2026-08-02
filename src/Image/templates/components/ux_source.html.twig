@@ -7,6 +7,8 @@
         {%- if source.sizes %} sizes="{{ source.sizes }}"{% endif %}
         {%- if source.width %} width="{{ source.width }}"{% endif %}
         {%- if source.height %} height="{{ source.height }}"{% endif %}
-        {%- if attrs is not empty %} {{ attrs|raw }}{% endif -%}
+        {#- one <source> is emitted per format, so stamping the extra attributes on
+            each of them would repeat unique ones such as "id" -#}
+        {%- if attrs is not empty and loop.first %} {{ attrs|raw }}{% endif -%}
     >
 {%- endfor -%}

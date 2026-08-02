@@ -103,6 +103,13 @@ returns the 800px one, so announcing ``1920w`` would mislead the browser into
 picking a variant that carries nothing more. This relies on the dimensions read
 server-side, so it applies whenever the source can be inspected.
 
+.. tip::
+
+    ``sizes`` is worth writing whenever the image is not full-width. Without it,
+    a browser given width descriptors assumes the image spans the whole viewport
+    (``100vw``) and downloads a candidate sized for that — often two steps larger
+    than needed.
+
 Named breakpoints
 ~~~~~~~~~~~~~~~~~
 
@@ -267,10 +274,13 @@ changes nothing elsewhere.
 
 .. note::
 
-    Inside a ``<twig:ux:picture>``, ``<twig:ux:img>`` renders a bare ``<img>``
-    and never wraps itself in a nested ``<picture>``: it is the fallback, and the
-    sources are the ones you declared. Outside of it, ``<twig:ux:img>`` still
-    builds its own ``<picture>`` when ``formats`` are requested.
+    Inside a ``<twig:ux:picture>``, ``<twig:ux:img>`` never wraps itself in a
+    nested ``<picture>``: it is the fallback of the one you opened. It does still
+    contribute its own format ``<source>`` elements, emitted just before the
+    ``<img>`` and after the ``<twig:ux:source>`` you declared, so the fallback
+    crop keeps AVIF and WebP too. Pass ``:formats="[]"`` to render a bare ``<img>``
+    instead. Outside a ``<twig:ux:picture>``, ``<twig:ux:img>`` builds its own
+    ``<picture>`` when ``formats`` are requested.
 
 The LCP image
 ~~~~~~~~~~~~~

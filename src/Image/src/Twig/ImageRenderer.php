@@ -84,12 +84,7 @@ final class ImageRenderer
 
         [$candidates, $sizes, $fallback] = $this->plan($component, $source);
 
-        // sizes="auto" (alone, or as a prefix before a fallback list) is only
-        // valid on a lazily loaded image; "priority" (or a global loading: eager)
-        // would silently produce invalid markup.
-        if (null !== $sizes && str_starts_with($sizes, SizesResolver::AUTO) && 'lazy' !== $loading) {
-            throw new InvalidArgumentException(\sprintf('The "sizes" prop cannot use "auto" on an image loaded with loading="%s": the keyword is only valid on a lazily loaded image. Drop "priority" or give an explicit "sizes".', $loading));
-        }
+        $this->validateAutoSizes($sizes, $loading);
 
         $formats = $this->formats($component, $capabilities);
 
@@ -156,6 +151,10 @@ final class ImageRenderer
         }
 
         [$candidates, $sizes] = $this->plan($component, $source);
+
+        // A <source> resolves "auto" against the <img> that follows it, which this
+        // component cannot see; the configured default is the closest thing to it.
+        $this->validateAutoSizes($sizes, $this->config['loading']);
 
         $rendered = [];
         foreach ($this->formats($component, $capabilities) as $format) {
@@ -274,6 +273,22 @@ final class ImageRenderer
     }
 
     /**
+     * The "auto" keyword (alone, or as a prefix before a fallback list) only means
+     * anything on a lazily loaded image: it stands for the concrete layout width,
+     * which is known before the fetch only when that fetch is deferred. On a
+     * <source>, it resolves against the following sibling <img>, so that <img> is
+     * the one that has to be lazy. Anything else is silently invalid markup.
+     */
+    private function validateAutoSizes(?string $sizes, string $loading): void
+    {
+        if (null === $sizes || !str_starts_with($sizes, SizesResolver::AUTO) || 'lazy' === $loading) {
+            return;
+        }
+
+        throw new InvalidArgumentException(\sprintf('The "sizes" prop cannot use "auto" alongside loading="%s": the keyword is only valid on a lazily loaded image (for a <source>, on the <img> that follows it). Drop "priority" or give an explicit "sizes".', $loading));
+    }
+
+    /**
      * @return list<string>
      */
     private function formats(ImageComponent|SourceComponent $component, ProviderCapabilities $capabilities): array
@@ -304,29 +319,46 @@ final class ImageRenderer
                 continue;
             }
 
-            // Clamping can collapse several candidates onto the same width.
-            $key = $descriptor ?? $clamped;
-            if (isset($seen[$key])) {
+            $generated = $provider->transform($source, $prototype->withWidth($clamped)->withHeight($targetHeight));
+            $descriptor ??= ($generated->width ?? $clamped).'w';
+
+            // Clamping, or a provider reporting the width it actually serves, can
+            // collapse several candidates onto one descriptor, and "there must not
+            // be an image candidate string for an element that has the same width
+            // descriptor value as another".
+            if (isset($seen[$descriptor])) {
                 continue;
             }
-            $seen[$key] = true;
+            $seen[$descriptor] = true;
 
-            $generated = $provider->transform($source, $prototype->withWidth($clamped)->withHeight($targetHeight));
-
-            $entries[] = $this->escapeCandidateUrl($generated->url).' '.($descriptor ?? ($generated->width ?? $clamped).'w');
+            $entries[] = $this->escapeCandidateUrl($generated->url).' '.$descriptor;
         }
 
         return implode(', ', $entries);
     }
 
     /**
-     * A srcset candidate URL "must not start or end with a U+002C COMMA": a
-     * leading one is eaten as a separator, a trailing one swallows the following
-     * candidate's descriptor. Providers build URLs freely, so both ends are
-     * percent-encoded defensively.
+     * Makes a provider URL safe to sit in a srcset.
+     *
+     * A candidate is read up to the first ASCII whitespace, everything after it
+     * being parsed as descriptors: whitespace inside the URL truncates it and
+     * corrupts every candidate that follows. A candidate URL also "must not start
+     * or end with a U+002C COMMA", a leading one being eaten as a separator and a
+     * trailing one swallowing the next candidate's descriptor. Interior commas are
+     * left alone: they are legal, and providers rely on them (Cloudinary encodes
+     * "w_640,q_auto,f_webp" in the path). Providers build URLs freely, so all of
+     * this is percent-encoded defensively.
      */
     private function escapeCandidateUrl(string $url): string
     {
+        $url = strtr($url, [
+            ' ' => '%20',
+            "\t" => '%09',
+            "\n" => '%0A',
+            "\f" => '%0C',
+            "\r" => '%0D',
+        ]);
+
         if (str_starts_with($url, ',')) {
             $url = '%2C'.substr($url, 1);
         }

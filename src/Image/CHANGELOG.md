@@ -16,7 +16,12 @@
   breakpoints no longer causes a layout shift.
 - Support `sizes="auto"`, letting the browser use the concrete layout size,
   optionally followed by a fallback list for browsers without the keyword, and
-  reject it on non-lazy images where it is invalid.
+  reject it on `<twig:ux:img>` and `<twig:ux:source>` alike wherever images are
+  not loaded lazily, which is the only case the keyword is valid in.
+- Percent-encode whitespace and edge commas in srcset candidate URLs, which the
+  srcset parser would otherwise read as candidate and descriptor separators.
+- Never emit the same width descriptor twice, even when a provider reports the
+  width it actually serves rather than the one that was requested.
 - Allow fractional `densities` such as `1.5`, as the pixel density descriptor is
   a floating-point number.
 - Cap srcset candidates at the source's natural width, since a width descriptor

@@ -145,8 +145,9 @@ class ImageComponentTest extends KernelTestCase
     }
 
     /**
-     * Inside a <twig:ux:picture>, the sources are declared explicitly, so the img
-     * must stay a bare fallback even though formats default to avif/webp.
+     * Nested in a <twig:ux:picture>, the img is the fallback: it must not open a
+     * second <picture>, but it still contributes the format sources for its own
+     * variant, which apply when no media condition matched.
      */
     public function testAnImgNestedInAPictureDoesNotWrapItself(): void
     {
@@ -157,7 +158,10 @@ class ImageComponentTest extends KernelTestCase
             TWIG);
 
         self::assertSame(1, substr_count($html, '<picture'));
-        self::assertStringNotContainsString('<source', $html);
+        self::assertStringContainsString('<source type="image/avif"', $html);
+        self::assertStringContainsString('<source type="image/webp"', $html);
+        // <source> must precede <img>
+        self::assertLessThan(strpos($html, '<img'), strrpos($html, '<source'));
     }
 
     public function testAStandaloneImgStillWrapsItselfWhenFormatsAreRequested(): void
@@ -185,6 +189,23 @@ class ImageComponentTest extends KernelTestCase
             $previous = $e->getPrevious() ?? $e;
             self::assertStringContainsString('only valid on a lazily loaded image', $previous->getMessage());
         }
+    }
+
+    /**
+     * A <twig:ux:source> expands to one <source> per format; a unique attribute
+     * such as "id" must not be repeated on each of them.
+     */
+    public function testExtraAttributesOnASourceAreRenderedOnce(): void
+    {
+        $html = $this->render(<<<'TWIG'
+            <twig:ux:picture>
+                <twig:ux:source media="(min-width: 1024px)" src="hero.jpg" id="wide" provider="cdn" :widths="[1024]" :formats="['avif', 'webp']" />
+                <twig:ux:img src="hero.jpg" alt="Hero" provider="cdn" :widths="[640]" :formats="[]" />
+            </twig:ux:picture>
+            TWIG);
+
+        self::assertGreaterThan(1, substr_count($html, '<source'));
+        self::assertSame(1, substr_count($html, 'id="wide"'));
     }
 
     public function testExtraAttributesArePassedThrough(): void

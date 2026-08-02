@@ -28,6 +28,7 @@ use Symfony\UX\Image\Tests\Fixtures\StaticSourceResolver;
 use Symfony\UX\Image\Transformation;
 use Symfony\UX\Image\Twig\ImageComponent;
 use Symfony\UX\Image\Twig\ImageRenderer;
+use Symfony\UX\Image\Twig\SourceComponent;
 
 final class ImageRendererTest extends TestCase
 {
@@ -255,6 +256,93 @@ final class ImageRendererTest extends TestCase
     }
 
     /**
+     * A <source> resolves "auto" against the <img> that follows it, so it is only
+     * valid when images are loaded lazily.
+     */
+    public function testSizesAutoOnASourceIsAllowedWhenLoadingIsLazy(): void
+    {
+        $renderer = $this->renderer($this->defaults(formats: []), loading: 'lazy');
+        $rendered = $renderer->renderSource($this->sourceComponent($renderer, 'auto'));
+
+        self::assertSame('auto', $rendered[0]->sizes);
+    }
+
+    public function testSizesAutoOnASourceThrowsWhenLoadingIsEager(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('only valid on a lazily loaded image');
+
+        $renderer = $this->renderer($this->defaults(formats: []), loading: 'eager');
+        $renderer->renderSource($this->sourceComponent($renderer, 'auto'));
+    }
+
+    /**
+     * A candidate is read up to the first ASCII whitespace, so a space inside the
+     * URL would truncate it and turn its tail into bogus descriptors.
+     */
+    public function testWhitespaceInAProviderUrlIsEscaped(): void
+    {
+        $provider = new class implements ImageProviderInterface {
+            public function transform(ImageSource $source, Transformation $transformation): GeneratedImage
+            {
+                return new GeneratedImage($source->url."/l_text:Arial_60:Hello World\t".$transformation->width, $transformation->width);
+            }
+
+            public function capabilities(): ProviderCapabilities
+            {
+                return new ProviderCapabilities(formats: [], widths: null, canResize: true);
+            }
+        };
+
+        $renderer = new ImageRenderer(
+            new StaticSourceResolver(),
+            $this->providers($provider, 'fake://x'),
+            new SizesResolver(self::SCREENS),
+            $this->defaults(widths: [640], formats: []),
+            ['loading' => 'lazy', 'decoding' => 'async'],
+        );
+
+        $rendered = $renderer->render($this->component($renderer));
+
+        self::assertSame('/images/hero.jpg/l_text:Arial_60:Hello%20World%09640 640w', $rendered->srcset);
+    }
+
+    /**
+     * "There must not be an image candidate string for an element that has the
+     * same width descriptor value as another": a provider reporting the width it
+     * actually serves can collapse two requests onto one descriptor.
+     */
+    public function testCandidatesCollapsingOntoOneWidthEmitASingleDescriptor(): void
+    {
+        $provider = new class implements ImageProviderInterface {
+            public function transform(ImageSource $source, Transformation $transformation): GeneratedImage
+            {
+                // Only serves multiples of 100, and says so.
+                $served = 100 * intdiv((int) $transformation->width, 100);
+
+                return new GeneratedImage($source->url.'?w='.$served, $served);
+            }
+
+            public function capabilities(): ProviderCapabilities
+            {
+                return new ProviderCapabilities(formats: [], widths: null, canResize: true);
+            }
+        };
+
+        $renderer = new ImageRenderer(
+            new StaticSourceResolver(),
+            $this->providers($provider, 'fake://x'),
+            new SizesResolver(self::SCREENS),
+            $this->defaults(widths: [640, 660, 1280], formats: []),
+            ['loading' => 'lazy', 'decoding' => 'async'],
+        );
+
+        $rendered = $renderer->render($this->component($renderer));
+
+        self::assertSame('/images/hero.jpg?w=600 600w, /images/hero.jpg?w=1200 1200w', $rendered->srcset);
+    }
+
+    /**
      * A URL ending with a comma would be swallowed by the srcset parser, taking
      * the next candidate's descriptor with it.
      */
@@ -396,15 +484,25 @@ final class ImageRendererTest extends TestCase
         self::assertSame(900, $rendered->height);
     }
 
-    private function renderer(array $defaults): ImageRenderer
+    private function renderer(array $defaults, string $loading = 'lazy'): ImageRenderer
     {
         return new ImageRenderer(
             new StaticSourceResolver(),
             $this->providers(new FakeProvider(), 'fake://x'),
             new SizesResolver(self::SCREENS),
             $defaults,
-            ['loading' => 'lazy', 'decoding' => 'async'],
+            ['loading' => $loading, 'decoding' => 'async'],
         );
+    }
+
+    private function sourceComponent(ImageRenderer $renderer, string $sizes): SourceComponent
+    {
+        $component = new SourceComponent($renderer);
+        $component->src = 'images/hero.jpg';
+        $component->media = '(min-width: 1024px)';
+        $component->sizes = $sizes;
+
+        return $component;
     }
 
     private function componentWithSizes(string $sizes, bool $priority): ImageComponent
