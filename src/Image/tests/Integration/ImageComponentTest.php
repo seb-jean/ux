@@ -208,6 +208,59 @@ class ImageComponentTest extends KernelTestCase
         self::assertSame(1, substr_count($html, 'id="wide"'));
     }
 
+    /**
+     * These three are rendered by the template, so they have to be real props:
+     * passed as extra attributes they would be emitted a second time, and a
+     * duplicate attribute is resolved to the first occurrence, silently dropping
+     * what the author asked for.
+     */
+    public function testLoadingDecodingAndFetchpriorityAreProps(): void
+    {
+        $html = $this->render('<twig:ux:img src="images/hero.jpg" alt="Hero" loading="eager" decoding="sync" fetchpriority="low" />');
+
+        self::assertSame(1, substr_count($html, 'loading='));
+        self::assertSame(1, substr_count($html, 'decoding='));
+        self::assertSame(1, substr_count($html, 'fetchpriority='));
+        self::assertStringContainsString('loading="eager"', $html);
+        self::assertStringContainsString('decoding="sync"', $html);
+        self::assertStringContainsString('fetchpriority="low"', $html);
+    }
+
+    /**
+     * eager + fetchpriority="high" with an asynchronous decode is a legitimate
+     * combination, so an explicit prop wins over the "priority" shorthand.
+     */
+    public function testAnExplicitPropOverridesPriority(): void
+    {
+        $html = $this->render('<twig:ux:img src="images/hero.jpg" alt="Hero" priority decoding="async" />');
+
+        self::assertStringContainsString('loading="eager"', $html);
+        self::assertStringContainsString('fetchpriority="high"', $html);
+        self::assertStringContainsString('decoding="async"', $html);
+    }
+
+    public function testAnInvalidLoadingValueThrows(): void
+    {
+        try {
+            $this->render('<twig:ux:img src="images/hero.jpg" alt="Hero" loading="nope" />');
+            self::fail('Expected an exception for an invalid "loading" value.');
+        } catch (\Throwable $e) {
+            $previous = $e->getPrevious() ?? $e;
+            self::assertStringContainsString('The "loading" prop must be one of "lazy", "eager"', $previous->getMessage());
+        }
+    }
+
+    public function testSizesAndDensitiesCannotBeCombined(): void
+    {
+        try {
+            $this->render('<twig:ux:img src="images/hero.jpg" alt="Hero" sizes="100vw" :densities="[1, 2]" />');
+            self::fail('Expected an exception for "sizes" combined with "densities".');
+        } catch (\Throwable $e) {
+            $previous = $e->getPrevious() ?? $e;
+            self::assertStringContainsString('cannot be combined', $previous->getMessage());
+        }
+    }
+
     public function testExtraAttributesArePassedThrough(): void
     {
         $html = $this->render('<twig:ux:img src="images/hero.jpg" alt="Hero" class="rounded" id="hero" />');

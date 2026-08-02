@@ -76,6 +76,22 @@ final class ImageRendererTest extends TestCase
         self::assertSame('high', $rendered->fetchpriority);
     }
 
+    public function testExplicitHintsBeatBothPriorityAndTheConfiguredDefaults(): void
+    {
+        $renderer = $this->renderer($this->defaults(formats: []));
+
+        $component = $this->component($renderer, priority: true);
+        $component->loading = 'lazy';
+        $component->decoding = 'async';
+        $component->fetchpriority = 'low';
+
+        $rendered = $renderer->render($component);
+
+        self::assertSame('lazy', $rendered->loading);
+        self::assertSame('async', $rendered->decoding);
+        self::assertSame('low', $rendered->fetchpriority);
+    }
+
     public function testTheConfiguredFitIsUsedWhenThePropIsNotSet(): void
     {
         $provider = new FakeProvider();

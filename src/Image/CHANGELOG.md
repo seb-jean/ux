@@ -22,6 +22,13 @@
   srcset parser would otherwise read as candidate and descriptor separators.
 - Never emit the same width descriptor twice, even when a provider reports the
   width it actually serves rather than the one that was requested.
+- Add the `loading`, `decoding` and `fetchpriority` props, validated against the
+  values the HTML spec allows. `priority` stays a shorthand for the three, and an
+  explicit prop wins over it. They previously had to be passed as extra
+  attributes, which emitted each one twice and silently dropped the given value,
+  a duplicate attribute resolving to its first occurrence.
+- Reject `sizes` combined with `densities`: an element carrying `sizes` must have
+  a width descriptor on every candidate, so one of the two was being ignored.
 - Allow fractional `densities` such as `1.5`, as the pixel density descriptor is
   a floating-point number.
 - Cap srcset candidates at the source's natural width, since a width descriptor

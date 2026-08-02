@@ -57,9 +57,12 @@ final class ImageRenderer
 
         [$width, $height] = $this->dimensions($component, $source);
 
-        $loading = $component->priority ? 'eager' : $this->config['loading'];
-        $decoding = $component->priority ? 'sync' : $this->config['decoding'];
-        $fetchpriority = $component->priority ? 'high' : null;
+        // "priority" is a shorthand for the three hints an LCP image wants, but a
+        // spelled-out prop always wins: eager and fetchpriority="high" go well with
+        // decoding="async", which keeps the decode off the rendering path.
+        $loading = $component->loading ?? ($component->priority ? 'eager' : $this->config['loading']);
+        $decoding = $component->decoding ?? ($component->priority ? 'sync' : $this->config['decoding']);
+        $fetchpriority = $component->fetchpriority ?? ($component->priority ? 'high' : null);
 
         $prototype = new Transformation(
             quality: $component->quality ?? $this->defaults['quality'],

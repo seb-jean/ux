@@ -296,6 +296,43 @@ fetched as early as possible. Mark it with ``priority``:
 This renders ``loading="eager"``, ``fetchpriority="high"`` and
 ``decoding="sync"`` instead of the defaults. Use it on one image per page.
 
+``priority`` is only a shorthand: ``loading``, ``decoding`` and ``fetchpriority``
+are props of their own, and an explicit one always wins. That matters for the LCP
+image, where an asynchronous decode keeps the decoding off the rendering path
+while the fetch stays eager and high-priority:
+
+.. code-block:: html+twig
+
+    <twig:ux:img src="images/hero.jpg" alt="…" priority decoding="async" />
+
+They are also useful on their own — ``fetchpriority="low"`` deprioritises an
+image that is visible but not important, ``loading="eager"`` opts a single image
+out of lazy loading without the rest of the ``priority`` treatment. Values are
+validated: ``loading`` accepts ``lazy`` and ``eager``, ``decoding`` accepts
+``sync``, ``async`` and ``auto``, ``fetchpriority`` accepts ``high``, ``low`` and
+``auto``.
+
+.. note::
+
+    Write these as props, not as extra attributes. The component renders the three
+    attributes itself, so passing them through would emit each one twice, and a
+    duplicate attribute resolves to its first occurrence — the value you wrote
+    would be the one dropped.
+
+.. tip::
+
+    ``fetchpriority="high"`` is enough for most LCP images. When the image is
+    discovered late (behind a carousel, or set from CSS), preload it as well, with
+    an ``imagesrcset``/``imagesizes`` pair mirroring what the component renders:
+
+    .. code-block:: html+twig
+
+        <link rel="preload" as="image" fetchpriority="high"
+              imagesrcset="…" imagesizes="…">
+
+    Keep the two in sync by hand: a preload that does not match the ``srcset``
+    and ``sizes`` of the ``<img>`` downloads a second, unused variant.
+
 Cropping and quality
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -368,24 +405,27 @@ a preset.
 Props reference
 ~~~~~~~~~~~~~~~
 
-============== ============================================ ===========================
-Prop           Description                                  Default
-============== ============================================ ===========================
-``src``        Source (asset path, public id or URL)        *(required)*
-``alt``        Alternative text (``""`` for decorative)     ``''``
-``width``      Intrinsic width, in pixels                   read from the source
-``height``     Intrinsic height, in pixels                  read from the source
-``sizes``      The ``sizes`` attribute, breakpoints allowed ``defaults.sizes``
-``widths``     Candidate widths for the ``srcset``          derived, else ``defaults.widths``
-``densities``  Densities for fixed-size images              ``defaults.densities``
-``formats``    Formats rendered as ``<picture>`` sources    ``defaults.formats``
-``priority``   LCP image (eager, ``fetchpriority=high``)    ``false``
-``fit``        ``contain``, ``cover`` or ``fill``           ``defaults.fit``
-``quality``    Compression quality, from 1 to 100           ``defaults.quality``
-``modifiers``  Provider-specific options                    ``defaults.modifiers``
-``preset``     Name of a configured preset                  *(none)*
-``provider``   Name of the provider to use                  the default provider
-============== ============================================ ===========================
+================= ============================================ ========================================
+Prop              Description                                  Default
+================= ============================================ ========================================
+``src``           Source (asset path, public id or URL)        *(required)*
+``alt``           Alternative text (``""`` for decorative)     ``''``
+``width``         Intrinsic width, in pixels                   read from the source
+``height``        Intrinsic height, in pixels                  read from the source
+``sizes``         The ``sizes`` attribute, breakpoints allowed ``defaults.sizes``
+``widths``        Candidate widths for the ``srcset``          derived, else ``defaults.widths``
+``densities``     Densities for fixed-size images              ``defaults.densities``
+``formats``       Formats rendered as ``<picture>`` sources    ``defaults.formats``
+``priority``      LCP image (eager, ``fetchpriority=high``)    ``false``
+``loading``       ``lazy`` or ``eager``                        ``priority``, else ``loading``
+``decoding``      ``sync``, ``async`` or ``auto``              ``priority``, else ``decoding``
+``fetchpriority`` ``high``, ``low`` or ``auto``                ``high`` with ``priority``, else omitted
+``fit``           ``contain``, ``cover`` or ``fill``           ``defaults.fit``
+``quality``       Compression quality, from 1 to 100           ``defaults.quality``
+``modifiers``     Provider-specific options                    ``defaults.modifiers``
+``preset``        Name of a configured preset                  *(none)*
+``provider``      Name of the provider to use                  the default provider
+================= ============================================ ========================================
 
 Configuration
 -------------

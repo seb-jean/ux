@@ -86,6 +86,14 @@ trait ImageProps
             }
         }
 
+        // "If an element has a sizes attribute present, all image candidate strings
+        // for that element must have the width descriptor specified": densities
+        // produce "2x" candidates, so the two describe incompatible srcsets and one
+        // of them would be dropped without a word.
+        if (isset($data['sizes'], $data['densities'])) {
+            throw new InvalidArgumentException('The "sizes" and "densities" props cannot be combined: "sizes" goes with the width descriptors of a fluid image, "densities" with the pixel density descriptors of a fixed-size one. Drop one of them.');
+        }
+
         return $data;
     }
 }
