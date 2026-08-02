@@ -1,0 +1,22 @@
+{%- set image = this.rendered -%}
+{%- set wrap = image.sources is not empty and not inject('ux_image.picture', false) -%}
+{%- set attrs = attributes|trim -%}
+{%- if wrap -%}
+    <picture>
+    {%- for source in image.sources -%}
+        <source type="{{ source.type }}" srcset="{{ source.srcset }}"{% if source.sizes %} sizes="{{ source.sizes }}"{% endif %}>
+    {%- endfor -%}
+{%- endif -%}
+<img
+    {{- ' ' }}src="{{ image.src }}"
+    {{- ' ' }}alt="{{ image.alt }}"
+    {%- if image.srcset %} srcset="{{ image.srcset }}"{% endif %}
+    {%- if image.sizes %} sizes="{{ image.sizes }}"{% endif %}
+    {%- if image.width %} width="{{ image.width }}"{% endif %}
+    {%- if image.height %} height="{{ image.height }}"{% endif %}
+    {{- ' ' }}loading="{{ image.loading }}"
+    {{- ' ' }}decoding="{{ image.decoding }}"
+    {%- if image.fetchpriority %} fetchpriority="{{ image.fetchpriority }}"{% endif %}
+    {%- if attrs is not empty %} {{ attrs|raw }}{% endif -%}
+>
+{%- if wrap %}</picture>{% endif -%}

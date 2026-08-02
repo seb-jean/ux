@@ -1,0 +1,29 @@
+{
+    "name": "symfony/ux-fastly-image",
+    "type": "symfony-ux-image-bridge",
+    "description": "Symfony UX Image Fastly Bridge",
+    "keywords": ["symfony-ux", "fastly", "image"],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "symfony/ux-image": "^3.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.1|^12.0"
+    },
+    "autoload": {
+        "psr-4": { "Symfony\\UX\\Image\\Bridge\\Fastly\\": "src/" },
+        "exclude-from-classmap": []
+    },
+    "autoload-dev": {
+        "psr-4": { "Symfony\\UX\\Image\\Bridge\\Fastly\\Tests\\": "tests/" }
+    },
+    "minimum-stability": "dev"
+}

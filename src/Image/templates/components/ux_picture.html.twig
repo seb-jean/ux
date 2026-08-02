@@ -1,0 +1,3 @@
+{%- do provide('ux_image.picture', true) -%}
+{%- set attrs = attributes|trim -%}
+<picture{% if attrs is not empty %} {{ attrs|raw }}{% endif %}>{% block content %}{% endblock %}</picture>

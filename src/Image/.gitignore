@@ -1,0 +1,5 @@
+/config/reference.php
+/vendor/
+/composer.lock
+/phpunit.xml
+/.phpunit.cache

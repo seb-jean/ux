@@ -1,0 +1,12 @@
+{%- set attrs = attributes|trim -%}
+{%- for source in this.rendered -%}
+    <source
+        {%- if source.media %} media="{{ source.media }}"{% endif %}
+        {%- if source.type %} type="{{ source.type }}"{% endif %}
+        {{- ' ' }}srcset="{{ source.srcset }}"
+        {%- if source.sizes %} sizes="{{ source.sizes }}"{% endif %}
+        {%- if source.width %} width="{{ source.width }}"{% endif %}
+        {%- if source.height %} height="{{ source.height }}"{% endif %}
+        {%- if attrs is not empty %} {{ attrs|raw }}{% endif -%}
+    >
+{%- endfor -%}
