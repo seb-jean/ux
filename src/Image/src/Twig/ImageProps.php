@@ -31,6 +31,9 @@ trait ImageProps
     /** Intrinsic height; read from the source when omitted. */
     public ?int $height = null;
 
+    /** Set to false to stop inferring the missing width/height from the source. */
+    public ?bool $dimensions = null;
+
     /** The "sizes" attribute; named breakpoints are allowed ("100vw md:50vw"). */
     public ?string $sizes = null;
 

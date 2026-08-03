@@ -5,7 +5,10 @@
    for when no media condition matched. #}
 {%- set wrap = image.sources is not empty and not inject('ux_image.picture', false) -%}
 {%- set attrs = attributes|trim -%}
-{%- if wrap %}<picture>{% endif -%}
+{# The root attributes belong to the <img>; "picture:" ones reach the wrapper, which
+   is generated here and would otherwise be impossible to style. #}
+{%- set pictureAttrs = attributes.nested('picture')|trim -%}
+{%- if wrap %}<picture{% if pictureAttrs is not empty %} {{ pictureAttrs|raw }}{% endif %}>{% endif -%}
 {%- for source in image.sources -%}
     <source type="{{ source.type }}" srcset="{{ source.srcset }}"{% if source.sizes %} sizes="{{ source.sizes }}"{% endif %}>
 {%- endfor -%}

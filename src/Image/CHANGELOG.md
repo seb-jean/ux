@@ -29,6 +29,13 @@
   a duplicate attribute resolving to its first occurrence.
 - Reject `sizes` combined with `densities`: an element carrying `sizes` must have
   a width descriptor on every candidate, so one of the two was being ignored.
+- Add the `picture:` attribute namespace, putting attributes on the `<picture>`
+  the component generates around an `<img>` that requests `formats`, which was
+  emitted bare and could not be reached.
+- Add the `dimensions` prop: `:dimensions="false"` stops inferring the missing
+  `width`/`height` from the source, for layouts that reserve the space in CSS.
+  An explicitly written dimension is still rendered.
+- Allow `loading`, `decoding`, `fetchpriority` and `dimensions` in presets.
 - Allow fractional `densities` such as `1.5`, as the pixel density descriptor is
   a floating-point number.
 - Cap srcset candidates at the source's natural width, since a width descriptor

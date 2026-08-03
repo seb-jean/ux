@@ -101,6 +101,31 @@ final class UXImageExtensionTest extends TestCase
         self::assertSame(['width' => 96, 'height' => 96, 'fit' => 'cover'], $presets['avatar']);
     }
 
+    /**
+     * A preset must be able to describe the rendering hints too, not only the
+     * variants to generate.
+     */
+    public function testPresetsCarryTheRenderingHints(): void
+    {
+        $container = $this->build([[
+            'presets' => [
+                'hero' => [
+                    'loading' => 'eager',
+                    'decoding' => 'async',
+                    'fetchpriority' => 'high',
+                    'dimensions' => false,
+                ],
+            ],
+        ]]);
+
+        $presets = $container->getDefinition('ux_image.twig_component.img')->getArgument(1);
+
+        self::assertSame(
+            ['loading' => 'eager', 'decoding' => 'async', 'fetchpriority' => 'high', 'dimensions' => false],
+            $presets['hero'],
+        );
+    }
+
     public function testScreensReachTheSizesResolver(): void
     {
         $container = $this->build([['screens' => ['small' => 480, 'big' => 1400]]]);

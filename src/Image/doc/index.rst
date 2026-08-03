@@ -69,6 +69,19 @@ them, which is required for remote sources that cannot be inspected:
     Setting only ``height: auto`` is what makes the attributes work; ``width: auto``
     silently defeats them.
 
+When the layout reserves the space itself — a CSS grid cell, an
+``aspect-ratio`` rule, a container the image simply fills — the inferred
+attributes can get in the way. ``:dimensions="false"`` turns the inference off:
+
+.. code-block:: html+twig
+
+    <twig:ux:img src="images/hero.jpg" alt="…" :dimensions="false" />
+
+Only the inference is disabled, not the attributes: a ``width`` or ``height``
+written explicitly is still rendered, and no longer drags the other one along
+through the aspect ratio. Reach for it deliberately — it gives up the protection
+against layout shifts, so the CSS has to provide it instead.
+
 Responsive images
 ~~~~~~~~~~~~~~~~~
 
@@ -360,6 +373,25 @@ Any other attribute is forwarded to the ``<img>`` element:
 
     <twig:ux:img src="images/hero.jpg" alt="…" class="rounded-xl shadow" id="hero" />
 
+When ``formats`` are requested, the component wraps the ``<img>`` in a
+``<picture>`` of its own. Prefix an attribute with ``picture:`` to put it there
+instead:
+
+.. code-block:: html+twig
+
+    <twig:ux:img src="images/hero.jpg" alt="…" class="rounded-xl" picture:class="block w-full" />
+
+.. code-block:: html
+
+    <picture class="block w-full">
+        <source type="image/avif" srcset="…">
+        <source type="image/webp" srcset="…">
+        <img src="…" alt="…" class="rounded-xl" …>
+    </picture>
+
+``<twig:ux:picture>`` needs none of this: its root element already is the
+``<picture>``, so its attributes land on it directly.
+
 Presets
 ~~~~~~~
 
@@ -412,6 +444,7 @@ Prop              Description                                  Default
 ``alt``           Alternative text (``""`` for decorative)     ``''``
 ``width``         Intrinsic width, in pixels                   read from the source
 ``height``        Intrinsic height, in pixels                  read from the source
+``dimensions``    Set to ``false`` to stop inferring them      ``true``
 ``sizes``         The ``sizes`` attribute, breakpoints allowed ``defaults.sizes``
 ``widths``        Candidate widths for the ``srcset``          derived, else ``defaults.widths``
 ``densities``     Densities for fixed-size images              ``defaults.densities``

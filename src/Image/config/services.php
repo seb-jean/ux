@@ -81,7 +81,7 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->tag('twig.component', [
                 'key' => 'ux:img',
-                'template' => '@UXImage/components/ux_img.html.twig',
+                'template' => '@UXImage/components/Img.html.twig',
                 'expose_public_props' => true,
             ])
 
@@ -92,14 +92,14 @@ return static function (ContainerConfigurator $container): void {
             ])
             ->tag('twig.component', [
                 'key' => 'ux:source',
-                'template' => '@UXImage/components/ux_source.html.twig',
+                'template' => '@UXImage/components/Source.html.twig',
                 'expose_public_props' => true,
             ])
 
         ->set('ux_image.twig_component.picture', PictureComponent::class)
             ->tag('twig.component', [
                 'key' => 'ux:picture',
-                'template' => '@UXImage/components/ux_picture.html.twig',
+                'template' => '@UXImage/components/Picture.html.twig',
                 'expose_public_props' => true,
             ])
     ;

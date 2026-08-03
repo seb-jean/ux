@@ -194,6 +194,13 @@ final class ImageRenderer
     {
         [$width, $height] = [$component->width, $component->height];
 
+        // Opting out of the inference, not of the attributes: whatever was written
+        // explicitly is still rendered. It gives up the layout-shift protection, so
+        // it is only sound when the CSS reserves the space itself.
+        if (false === $component->dimensions) {
+            return [$width, $height];
+        }
+
         if (null === $ratio = $source->dimensions) {
             return [$width, $height];
         }
