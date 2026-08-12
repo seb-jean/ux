@@ -1,0 +1,59 @@
+{
+    "name": "symfony/ux-image",
+    "type": "symfony-bundle",
+    "description": "Transforms images on the server (resize, crop, format conversion) and renders them in Twig templates.",
+    "keywords": [
+        "symfony-ux",
+        "twig",
+        "image",
+        "thumbnail"
+    ],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Symfony\\UX\\Image\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Symfony\\UX\\Image\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.4",
+        "symfony/filesystem": "^7.4|^8.0",
+        "symfony/framework-bundle": "^7.4|^8.0",
+        "symfony/http-foundation": "^7.4|^8.0",
+        "symfony/http-kernel": "^7.4|^8.0",
+        "symfony/routing": "^7.4|^8.0",
+        "symfony/twig-bundle": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.1|^12.0",
+        "symfony/ux-twig-component": "^2.14|^3.0"
+    },
+    "suggest": {
+        "ext-gd": "To transform images with the GD driver",
+        "ext-imagick": "To transform images with the Imagick driver"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "conflict": {
+        "symfony/flex": "<1.13"
+    },
+    "extra": {
+        "thanks": {
+            "name": "symfony/ux",
+            "url": "https://github.com/symfony/ux"
+        }
+    },
+    "minimum-stability": "dev"
+}
