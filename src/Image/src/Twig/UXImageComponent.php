@@ -1,0 +1,63 @@
+<?php
+
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Symfony\UX\Image\Twig;
+
+/**
+ * Twig Component for rendering images.
+ *
+ * Supports three syntaxes:
+ *
+ *   {{ ux_image('/img/photo.jpg') }}
+ *
+ *   {% component 'UX:Image' with { src: '/img/photo.jpg' } %}
+ *
+ *   <twig:UX:Image src="/img/photo.jpg" />
+ *
+ * For <picture> support with multiple sources:
+ *
+ *   <twig:UX:Image src="/img/photo.jpg" :sources="[
+ *       { srcset: '/img/photo.avif', type: 'image/avif' },
+ *       { srcset: '/img/photo.webp', type: 'image/webp' },
+ *   ]" />
+ *
+ * Any extra attribute is forwarded as an HTML attribute on the rendered <img>.
+ *
+ * @author Sébastien Jean <contact@seb-jean.fr>
+ *
+ * @internal
+ */
+final class UXImageComponent
+{
+    public string $src;
+
+    public ?string $alt = null;
+
+    public ?int $width = null;
+
+    public ?int $height = null;
+
+    public ?string $loading = null;
+
+    public ?string $decoding = null;
+
+    public ?string $srcset = null;
+
+    public ?string $sizes = null;
+
+    /** @var 'high'|'low'|'auto'|null */
+    public ?string $fetchpriority = null;
+
+    public ?string $provider = null;
+
+    /** @var array<array{srcset: string, type?: string, media?: string, sizes?: string, width?: int, height?: int}>|null */
+    public ?array $sources = null;
+}

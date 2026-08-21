@@ -1,0 +1,217 @@
+<?php
+
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Symfony\UX\Image\Tests\Twig;
+
+use PHPUnit\Framework\TestCase;
+use Symfony\UX\Image\Provider\Local\LocalProvider;
+use Symfony\UX\Image\Provider\Providers;
+use Symfony\UX\Image\Twig\ImageRuntime;
+
+class ImageRuntimeTest extends TestCase
+{
+    private ImageRuntime $runtime;
+
+    protected function setUp(): void
+    {
+        $providers = new Providers(['default' => new LocalProvider()]);
+        $this->runtime = new ImageRuntime($providers);
+    }
+
+    // --- ux_image() Twig function ---
+
+    public function testRenderWithSrcOnly(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg');
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+    }
+
+    public function testRenderWithOptions(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'alt' => 'A photo',
+            'width' => 800,
+            'height' => 600,
+            'loading' => 'eager',
+        ]);
+
+        $this->assertStringContainsString('alt="A photo"', $html);
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+        $this->assertStringContainsString('loading="eager"', $html);
+    }
+
+    public function testRenderWithExtraAttributes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [], ['class' => 'hero', 'id' => 'main-img']);
+
+        $this->assertStringContainsString('class="hero"', $html);
+        $this->assertStringContainsString('id="main-img"', $html);
+    }
+
+    // --- {% component %} and <twig:UX:Image> via render() ---
+
+    public function testComponentRenderWithSrcOnly(): void
+    {
+        $html = $this->runtime->render(['src' => '/images/photo.jpg']);
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+    }
+
+    public function testComponentRenderWithOptions(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'alt' => 'A photo',
+            'width' => 800,
+            'height' => 600,
+            'loading' => 'eager',
+        ]);
+
+        $this->assertStringContainsString('src="/images/photo.jpg"', $html);
+        $this->assertStringContainsString('alt="A photo"', $html);
+        $this->assertStringContainsString('width="800"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+        $this->assertStringContainsString('loading="eager"', $html);
+    }
+
+    public function testComponentRenderExtraArgsBecomHtmlAttributes(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'class' => 'hero',
+            'data-id' => '42',
+        ]);
+
+        $this->assertStringContainsString('class="hero"', $html);
+        $this->assertStringContainsString('data-id="42"', $html);
+    }
+
+    public function testComponentRenderRequiresSrc(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->runtime->render(['alt' => 'Photo']);
+    }
+
+    // --- sources / <picture> support ---
+
+    public function testRenderImageWithSourcesReturnsPictureTag(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif'],
+                ['srcset' => '/images/photo.webp', 'type' => 'image/webp'],
+            ],
+        ]);
+
+        $this->assertStringStartsWith('<picture>', $html);
+        $this->assertStringEndsWith('</picture>', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.avif" type="image/avif">', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.webp" type="image/webp">', $html);
+        $this->assertStringContainsString('<img src="/images/photo.jpg"', $html);
+    }
+
+    public function testRenderImageWithSourceIncludesMediaAndSizes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                [
+                    'srcset' => '/images/photo.webp',
+                    'type' => 'image/webp',
+                    'media' => '(min-width: 800px)',
+                    'sizes' => '80vw',
+                ],
+            ],
+        ]);
+
+        $this->assertStringContainsString('type="image/webp"', $html);
+        $this->assertStringContainsString('media="(min-width: 800px)"', $html);
+        $this->assertStringContainsString('sizes="80vw"', $html);
+    }
+
+    public function testComponentRenderWithSources(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif'],
+                ['srcset' => '/images/photo.webp', 'type' => 'image/webp'],
+            ],
+        ]);
+
+        $this->assertStringStartsWith('<picture>', $html);
+        $this->assertStringEndsWith('</picture>', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.avif" type="image/avif">', $html);
+        $this->assertStringContainsString('<source srcset="/images/photo.webp" type="image/webp">', $html);
+    }
+
+    public function testRenderImageWithDecodingOption(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', ['decoding' => 'sync']);
+
+        $this->assertStringContainsString('decoding="sync"', $html);
+    }
+
+    public function testComponentRenderWithDecodingOption(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/photo.jpg',
+            'decoding' => 'auto',
+        ]);
+
+        $this->assertStringContainsString('decoding="auto"', $html);
+    }
+
+    public function testRenderImageWithSrcsetAndSizes(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'srcset' => '/images/photo-300.jpg 300w, /images/photo-900.jpg 900w',
+            'sizes' => '(max-width: 600px) 100vw, 50vw',
+        ]);
+
+        $this->assertStringContainsString('srcset=', $html);
+        $this->assertStringContainsString('sizes="(max-width: 600px) 100vw, 50vw"', $html);
+    }
+
+    public function testRenderImageWithFetchpriority(): void
+    {
+        $html = $this->runtime->renderImage('/images/hero.jpg', ['fetchpriority' => 'high']);
+
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+    }
+
+    public function testRenderImageWithSourceWidthAndHeight(): void
+    {
+        $html = $this->runtime->renderImage('/images/photo.jpg', [
+            'sources' => [
+                ['srcset' => '/images/photo.avif', 'type' => 'image/avif', 'width' => 1200, 'height' => 600],
+            ],
+        ]);
+
+        $this->assertStringContainsString('width="1200"', $html);
+        $this->assertStringContainsString('height="600"', $html);
+    }
+
+    public function testComponentRenderWithSrcsetSizesAndFetchpriority(): void
+    {
+        $html = $this->runtime->render([
+            'src' => '/images/hero.jpg',
+            'srcset' => '/images/hero-600.jpg 600w, /images/hero-1200.jpg 1200w',
+            'sizes' => '100vw',
+            'fetchpriority' => 'high',
+        ]);
+
+        $this->assertStringContainsString('srcset=', $html);
+        $this->assertStringContainsString('sizes="100vw"', $html);
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+    }
+}
