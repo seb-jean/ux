@@ -40,16 +40,18 @@ jobs:
             fail-fast: false
             matrix:
                 shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        env:
+            APP_ENV: prod
         steps:
             - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
                   persist-credentials: false
 
-            - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
+            - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3.1.1
               with:
                   cache: true
 
-            - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+            - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
               with:
                   php-version: '8.4'
                   extensions: intl
@@ -69,6 +71,10 @@ jobs:
                   working-directory: apps/toolkit
                   dependency-versions: highest
 
+            - name: Compile app assets
+              run: php bin/console asset-map:compile
+              working-directory: apps/toolkit
+
             - name: Run browser tests
               id: browser-tests
               run: pnpm exec playwright test -c src/Toolkit/assets --shard="$SHARD/$SHARD_TOTAL"
@@ -76,7 +82,7 @@ jobs:
                   SHARD: ${{ matrix.shard }}
                   SHARD_TOTAL: ${{ strategy.job-total }}
 
-            - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+            - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               if: ${{ always() && steps.browser-tests.conclusion == 'failure' }}
               with:
                   name: Playwright report and output (shard ${{ matrix.shard }})
@@ -86,7 +92,7 @@ jobs:
                   retention-days: 7
                   include-hidden-files: true
 
-            - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+            - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
               if: ${{ always() && steps.browser-tests.conclusion == 'failure' }}
               with:
                   name: Symfony logs (shard ${{ matrix.shard }})
