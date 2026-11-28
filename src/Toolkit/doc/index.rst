@@ -98,10 +98,11 @@ are loaded by Reprise instead, so see the `Reprise Stimulus documentation`_.
 Choosing a Kit
 --------------
 
-Four kits are shipped with the Toolkit:
+Five kits are shipped with the Toolkit:
 
 * ``shadcn``, `Shadcn UI <https://ux.symfony.com/toolkit/kits/shadcn>`_
 * ``flowbite-4``, `Flowbite v4 <https://ux.symfony.com/toolkit/kits/flowbite-4>`_
+* ``daisyui-5``, `daisyUI v5 <https://ux.symfony.com/toolkit/kits/daisyui-5>`_
 * ``bootstrap``, `Bootstrap 5.3 <https://ux.symfony.com/toolkit/kits/bootstrap>`_
 * ``common``, `design-system agnostic recipes <https://ux.symfony.com/toolkit/kits/common>`_
   for common Symfony needs, such as logout links
@@ -217,6 +218,52 @@ In a recipe ``manifest.json``, the destinations of ``copy-files`` can use the
 They resolve to ``dir`` followed by ``subdirectory``. All kits shipped with the
 Toolkit use them. A plain path still works, but its files are copied as they
 are and never rewritten. An unknown placeholder is an error.
+
+Shipping Kit Files
+~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 3.9
+
+    The ``copy-files`` option of the kit ``manifest.json`` was added in UX
+    Toolkit 3.9.
+
+Some kits need files that no recipe owns, like the font of their design. Instead
+of asking users to download them, ship them in the kit and declare them in the
+``copy-files`` option of the kit ``manifest.json``:
+
+.. code-block:: text
+
+    my-kit/
+    ├── assets/
+    │   └── fonts/
+    │       ├── Inter-Regular.woff2
+    │       └── Inter-SemiBold.woff2
+    ├── button/
+    │   └── manifest.json
+    └── manifest.json
+
+.. code-block:: json
+
+    {
+        "name": "My Kit",
+        "copy-files": {
+            "assets/fonts/": "assets/fonts/"
+        }
+    }
+
+``ux:install`` copies these files with every recipe of the kit, and asks before
+overwriting a file you changed. Their sources and destinations follow the same
+rules as the ``copy-files`` of a recipe. Reference them from the ``INSTALL.md``
+of the kit, for instance in the ``@font-face`` rules of the stylesheet it asks
+users to write:
+
+.. code-block:: css
+
+    @font-face {
+        font-family: Inter;
+        font-weight: 400;
+        src: url("../fonts/Inter-Regular.woff2") format("woff2");
+    }
 
 The Recipe Is Yours, For Worse and For Better
 ---------------------------------------------

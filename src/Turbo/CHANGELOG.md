@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.9.0
+
+- Add support for MercureBundle ^0.7 and Mercure ^0.10
+
 ## 3.7.0
 
 - Render the HTML attributes of `<twig:Turbo:Stream:From>` on the `<turbo-mercure-stream-source>` element, and add an `attributes` argument to `turbo_stream_from()`
@@ -40,6 +44,10 @@
 - Minimum required PHP version is now 8.4
 - Remove old compatibility layer with deprecated `StimulusTwigExtension` from WebpackEncoreBundle ^1.0, use StimulusBundle instead
 - Remove BC layer for `TurboStreamListenRendererInterface::renderTurboStreamListen()` `$eventSourceOptions` parameter
+
+## 2.36.4
+
+- Throw an `\InvalidArgumentException` when `TurboStream::action()` receives an attribute name that is not a valid HTML attribute name
 
 ## 2.35
 

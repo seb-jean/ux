@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 3.9.0
+
+- [Common] Make the `sortable` controller refuse an update URL of another origin, instead of sending it the CSRF token
+- [daisyUI v5] Add the `daisyui-5` kit, with the `button` recipe
+- [daisyUI v5] Add the `badge` recipe
+- [daisyUI v5] Add the `alert` recipe
+- Allow a kit to ship kit-global files, like the fonts it needs, with a `copy-files` entry in its `manifest.json`: `ux:install` installs them with every recipe of the kit
+
 ## 3.8.1
 
 - [Shadcn] Fix the content of `dropdown-menu`, `popover`, `date-picker`, `select`, `combobox`, `menubar`, `hover-card` and `navigation-menu` misplaced in the top layer: ignoring its alignment in Firefox, and leaving its trigger on scroll in Chrome
@@ -223,6 +231,11 @@
 - [Shadcn] Add `collapsible` recipe
 - [Shadcn] Add `typography` recipe
 - [Shadcn] Add `toggle-group` recipe
+
+## 2.36.4
+
+- Reject glob characters in the sources of the `copy-files` of a recipe manifest.
+- Validate the version constraints and the Importmap package names of recipe dependencies, and shell-quote the suggested install commands.
 
 ## 2.36.1
 
